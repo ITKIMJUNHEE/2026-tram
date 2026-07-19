@@ -1,39 +1,43 @@
 const express = require('express');
-const db = require('../db/connection');
+const { pool } = require('../db/connection');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const rows = db.prepare('SELECT * FROM saved_scenarios ORDER BY id DESC').all();
-  res.json(rows.map((row) => ({
-    id: row.id,
-    createdAt: row.created_at,
-    inputs: JSON.parse(row.input_json),
-    results: JSON.parse(row.results_json),
-    weather: JSON.parse(row.weather_json)
-  })));
+const toScenarioDto = (row) => ({
+  id: row.id,
+  createdAt: row.created_at,
+  inputs: row.input_json,
+  results: row.results_json,
+  weather: row.weather_json
 });
 
-router.post('/', (req, res) => {
-  const { inputs, results, weather } = req.body || {};
-  if (!inputs || !results) {
-    return res.status(400).json({ error: 'inputs, results is required' });
+router.get('/', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM saved_scenarios ORDER BY id DESC');
+    res.json(rows.map(toScenarioDto));
+  } catch (err) {
+    next(err);
   }
+});
 
-  const stmt = db.prepare(`
-    INSERT INTO saved_scenarios (input_json, results_json, weather_json)
-    VALUES (?, ?, ?)
-  `);
-  const info = stmt.run(JSON.stringify(inputs), JSON.stringify(results), JSON.stringify(weather || {}));
+router.post('/', async (req, res, next) => {
+  try {
+    const { inputs, results, weather } = req.body || {};
+    if (!inputs || !results) {
+      return res.status(400).json({ error: 'inputs, results is required' });
+    }
 
-  const row = db.prepare('SELECT * FROM saved_scenarios WHERE id = ?').get(info.lastInsertRowid);
-  res.status(201).json({
-    id: row.id,
-    createdAt: row.created_at,
-    inputs: JSON.parse(row.input_json),
-    results: JSON.parse(row.results_json),
-    weather: JSON.parse(row.weather_json)
-  });
+    const { rows } = await pool.query(
+      `INSERT INTO saved_scenarios (input_json, results_json, weather_json)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [JSON.stringify(inputs), JSON.stringify(results), JSON.stringify(weather || {})]
+    );
+
+    res.status(201).json(toScenarioDto(rows[0]));
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

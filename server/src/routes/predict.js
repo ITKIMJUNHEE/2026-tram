@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const db = require('../db/connection');
+const { pool } = require('../db/connection');
 const { runPredictionSimulation } = require('../engine/predictionEngine');
 
 const router = express.Router();
@@ -18,15 +18,15 @@ const loadBusDataForMonth = (month) => {
   }
 };
 
-const loadStationsForPrediction = () => {
-  const rows = db.prepare('SELECT * FROM stations ORDER BY id').all();
+const loadStationsForPrediction = async () => {
+  const { rows } = await pool.query('SELECT * FROM stations ORDER BY id');
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
     lat: row.lat,
     lng: row.lon,
     base: row.prediction_base,
-    shared: !!row.is_shared,
+    shared: row.is_shared,
     commercialScore: row.commercial_score,
     type: row.area_type
   }));
@@ -43,18 +43,22 @@ router.get('/bus-data/:month', (req, res) => {
   res.json(loadBusDataForMonth(month));
 });
 
-router.post('/', (req, res) => {
-  const { tramInterval, busReduction, signalLevel, isAiMode, timeSlot, month } = req.body || {};
-  if (!tramInterval || busReduction === undefined) {
-    return res.status(400).json({ error: 'tramInterval, busReduction is required' });
+router.post('/', async (req, res, next) => {
+  try {
+    const { tramInterval, busReduction, signalLevel, isAiMode, timeSlot, month } = req.body || {};
+    if (!tramInterval || busReduction === undefined) {
+      return res.status(400).json({ error: 'tramInterval, busReduction is required' });
+    }
+
+    const stations = await loadStationsForPrediction();
+    const busData = loadBusDataForMonth(month || 1);
+    const results = runPredictionSimulation(stations, tramInterval, busReduction, busData, signalLevel, isAiMode, timeSlot);
+    const weather = getSeasonalWeather(month || 1);
+
+    res.json({ results, busStops: busData, weather });
+  } catch (err) {
+    next(err);
   }
-
-  const stations = loadStationsForPrediction();
-  const busData = loadBusDataForMonth(month || 1);
-  const results = runPredictionSimulation(stations, tramInterval, busReduction, busData, signalLevel, isAiMode, timeSlot);
-  const weather = getSeasonalWeather(month || 1);
-
-  res.json({ results, busStops: busData, weather });
 });
 
 module.exports = router;

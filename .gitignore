@@ -11,10 +11,6 @@ node_modules/
 # production
 client/build
 
-# database
-server/src/db/*.sqlite
-server/src/db/*.sqlite3
-
 # misc
 .DS_Store
 .env

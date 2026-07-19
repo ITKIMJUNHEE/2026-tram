@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('./connection');
+const { pool, ensureSchema } = require('./connection');
 
 const CSV_PATH = path.join(__dirname, '..', 'data', 'tram_stations.csv');
 const META_PATH = path.join(__dirname, '..', 'data', 'stationMeta.json');
@@ -16,38 +16,10 @@ function parseStationsCsv(csvText) {
   });
 }
 
-function seedStations() {
+async function seedStations() {
   const csvText = fs.readFileSync(CSV_PATH, 'utf-8');
   const stationMeta = JSON.parse(fs.readFileSync(META_PATH, 'utf-8'));
   const rows = parseStationsCsv(csvText);
-
-  const insert = db.prepare(`
-    INSERT INTO stations
-      (id, name, lat, lon, transfer_type, base_passengers, is_shared, commercial_score, area_type, prediction_base)
-    VALUES
-      (@id, @name, @lat, @lon, @transfer_type, @base_passengers, @is_shared, @commercial_score, @area_type, @prediction_base)
-    ON CONFLICT(id) DO UPDATE SET
-      name = excluded.name,
-      lat = excluded.lat,
-      lon = excluded.lon,
-      transfer_type = excluded.transfer_type,
-      base_passengers = excluded.base_passengers,
-      is_shared = excluded.is_shared,
-      commercial_score = excluded.commercial_score,
-      area_type = excluded.area_type,
-      prediction_base = excluded.prediction_base
-  `);
-
-  const insertAll = (stations) => {
-    db.exec('BEGIN');
-    try {
-      for (const st of stations) insert.run(st);
-      db.exec('COMMIT');
-    } catch (err) {
-      db.exec('ROLLBACK');
-      throw err;
-    }
-  };
 
   const merged = rows.map((row) => {
     const meta = stationMeta[row.station_id] || {};
@@ -58,15 +30,64 @@ function seedStations() {
       lon: Number(row.lon),
       transfer_type: row.transfer_type || null,
       base_passengers: Number(row.base_passengers) || 0,
-      is_shared: String(row.is_shared).toLowerCase() === 'true' ? 1 : 0,
+      is_shared: String(row.is_shared).toLowerCase() === 'true',
       commercial_score: meta.commercialScore ?? 0,
       area_type: meta.areaType ?? 'residential',
       prediction_base: meta.predictionBase ?? (Number(row.base_passengers) || 0)
     };
   });
 
-  insertAll(merged);
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    for (const st of merged) {
+      await client.query(
+        `INSERT INTO stations
+           (id, name, lat, lon, transfer_type, base_passengers, is_shared, commercial_score, area_type, prediction_base)
+         VALUES
+           ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (id) DO UPDATE SET
+           name = EXCLUDED.name,
+           lat = EXCLUDED.lat,
+           lon = EXCLUDED.lon,
+           transfer_type = EXCLUDED.transfer_type,
+           base_passengers = EXCLUDED.base_passengers,
+           is_shared = EXCLUDED.is_shared,
+           commercial_score = EXCLUDED.commercial_score,
+           area_type = EXCLUDED.area_type,
+           prediction_base = EXCLUDED.prediction_base`,
+        [
+          st.id,
+          st.name,
+          st.lat,
+          st.lon,
+          st.transfer_type,
+          st.base_passengers,
+          st.is_shared,
+          st.commercial_score,
+          st.area_type,
+          st.prediction_base
+        ]
+      );
+    }
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+
   console.log(`[seed] ${merged.length}개 정거장 데이터 시딩 완료`);
 }
 
-seedStations();
+async function main() {
+  await ensureSchema();
+  await seedStations();
+  await pool.end();
+}
+
+main().catch((err) => {
+  console.error('[seed] 시딩 실패:', err);
+  process.exit(1);
+});

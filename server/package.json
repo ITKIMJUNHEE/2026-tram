@@ -5,15 +5,16 @@
   "description": "대전 트램 시뮬레이션 백엔드 API 서버",
   "main": "src/index.js",
   "scripts": {
-    "start": "node --experimental-sqlite src/index.js",
-    "dev": "node --experimental-sqlite --watch src/index.js",
-    "seed": "node --experimental-sqlite src/db/seed.js"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/db/seed.js"
   },
   "engines": {
-    "node": ">=22.5.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "pg": "^8.22.0"
   }
 }
