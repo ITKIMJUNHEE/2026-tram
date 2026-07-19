@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# 대전 트램 AI 시뮬레이션 (Daejeon Tram Policy Simulator)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+정거장 좌표·시뮬레이션 로직이 프론트엔드에 하드코딩되어 있던 해커톤 프로젝트를,
+**React(client) + Express(server) + SQLite(DB)** 3-Tier 구조로 마이그레이션한 프로젝트입니다.
 
-## Available Scripts
+## 아키텍처
 
-In the project directory, you can run:
+```
+client/   React 19 (CRA) — UI, 지도(Leaflet), 입력값 → API 호출만 담당
+server/   Express — 정책/예측 시뮬레이션 연산, REST API
+server/src/db/  Node.js 내장 node:sqlite — 정거장/결정로그/저장시나리오 영속화
+```
 
-### `npm start`
+- `client`는 순수 프레젠테이션 계층입니다. 예산·혼잡도·민원 위험 등 모든 연산은
+  `server/src/engine/policyEngine.js`(정책 시뮬레이터), `server/src/engine/predictionEngine.js`(예측 지도)에서
+  수행하고 REST API로 내려줍니다.
+- 정거장 좌표/승객 데이터는 `server/src/data/tram_stations.csv` + `stationMeta.json`을 시드로 SQLite `stations` 테이블에 저장됩니다.
+- 정책 승인 로그(`simulation_logs`)와 저장된 시나리오(`saved_scenarios`)도 SQLite에 영속화됩니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 요구사항
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js **22.5 이상** (내장 `node:sqlite` 모듈 사용, 네이티브 빌드 도구 불필요)
 
-### `npm test`
+## 시작하기
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm run install:all   # client + server 의존성 설치
+npm run seed           # SQLite에 정거장 데이터 시딩 (최초 1회, 또는 데이터 갱신 시)
+npm run dev             # server(:4000) + client(:3000) 동시 실행
+```
 
-### `npm run build`
+브라우저에서 http://localhost:3000 접속 (로그인 ID: `admin`).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+날씨 표시 기능(선택)은 `server/.env`에 `OPENWEATHER_API_KEY`를 넣으면 실데이터로 동작하고,
+키가 없으면 안전 기본값(4°C, 흐림)으로 대체됩니다. `server/.env.example` 참고.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 개별 실행
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm run --prefix server dev    # 백엔드만
+npm run --prefix client start  # 프론트엔드만 (proxy로 :4000 API 연동)
+```
 
-### `npm run eject`
+## 주요 API
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| Method | Endpoint | 설명 |
+|---|---|---|
+| GET | `/api/stations` | 전체 정거장 목록 |
+| GET | `/api/simulate/defaults` | 정책 시뮬레이터 초기값 (버스 예산은 실데이터 CSV 기준) |
+| POST | `/api/simulate` | 정책 시뮬레이션 실행 (예산/혼잡도/민원) |
+| POST | `/api/simulate/alternative` | 전체 시나리오 그리드서치로 최적 대안 탐색 |
+| POST | `/api/predict` | 월별/시간대별 혼잡도 예측 |
+| GET/POST | `/api/logs` | 정책 결정 로그 |
+| GET/POST | `/api/scenarios` | 저장된 시나리오 |
+| GET | `/api/weather` | 대전 날씨 (서버가 OpenWeatherMap을 프록시) |
