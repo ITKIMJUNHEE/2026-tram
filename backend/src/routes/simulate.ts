@@ -1,13 +1,14 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const { runPolicySimulation, judgePolicy, findAlternative } = require('../engine/policyEngine');
+import express, { Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { runPolicySimulation, judgePolicy, findAlternative } from '../engine/policyEngine';
+import { PolicyInputs, SimulateRequestBody } from '../types';
 
 const router = express.Router();
 
 const BUDGET_CSV_PATH = path.join(__dirname, '..', 'data', 'bus_budget.csv');
 
-const getBaseBusCostYear = () => {
+const getBaseBusCostYear = (): number => {
   const text = fs.readFileSync(BUDGET_CSV_PATH, 'utf-8');
   const rows = text.trim().split(/\r?\n/).slice(1);
   const row2024 = rows.find((line) => line.startsWith('2024,'));
@@ -16,7 +17,7 @@ const getBaseBusCostYear = () => {
   return Number.isFinite(value) ? value : 120000000000;
 };
 
-const DEFAULT_INPUTS = {
+const DEFAULT_INPUTS: Omit<PolicyInputs, 'baseBusCostYear'> = {
   tramHeadway: 6,
   busCut: 20,
   passengerPeak: 2500,
@@ -24,11 +25,11 @@ const DEFAULT_INPUTS = {
   operationHours: 18
 };
 
-router.get('/defaults', (req, res) => {
+router.get('/defaults', (req: Request, res: Response) => {
   res.json({ ...DEFAULT_INPUTS, baseBusCostYear: getBaseBusCostYear() });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
   const { inputs, weather } = req.body || {};
   if (!inputs) return res.status(400).json({ error: 'inputs is required' });
 
@@ -37,7 +38,7 @@ router.post('/', (req, res) => {
   res.json({ results, judgement });
 });
 
-router.post('/alternative', (req, res) => {
+router.post('/alternative', (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
   const { inputs, weather } = req.body || {};
   if (!inputs) return res.status(400).json({ error: 'inputs is required' });
 
@@ -45,4 +46,4 @@ router.post('/alternative', (req, res) => {
   res.json(alternative);
 });
 
-module.exports = router;
+export default router;

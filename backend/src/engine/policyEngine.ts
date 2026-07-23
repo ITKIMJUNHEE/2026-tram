@@ -4,7 +4,19 @@
  * judgePolicy/findAlternative 개념을 하나의 서버측 순수 함수 모듈로 통합한 것.
  */
 
-const runPolicySimulation = (inputs, weather = { type: 'sunny', intensity: 0 }) => {
+import {
+  WeatherCondition,
+  PolicyInputs,
+  PolicySimulationResult,
+  PolicyJudgement,
+  AlternativeSearchResult,
+  AlternativeScenario
+} from '../types';
+
+const runPolicySimulation = (
+  inputs: PolicyInputs,
+  weather: WeatherCondition = { type: 'sunny', intensity: 0 }
+): PolicySimulationResult => {
   const { tramHeadway, busCut, passengerPeak, costPerTramRun, baseBusCostYear, operationHours } = inputs;
 
   let speedFactor = 1.0;
@@ -70,29 +82,29 @@ const runPolicySimulation = (inputs, weather = { type: 'sunny', intensity: 0 }) 
     strategyProposal = {
       title: `❄️ 폭설 비상 대응 (적설량 ${weather.intensity}cm)`,
       actionItems: [`운행 속도 ${Math.round(speedFactor * 100)}%로 감속`, `실제 배차 ${effectiveHeadway.toFixed(1)}분 (${delayRatio}배 지연)`],
-      tone: 'danger'
+      tone: 'danger' as const
     };
   } else if (weather.type === 'rain') {
     const delayRatio = (effectiveHeadway / tramHeadway).toFixed(1);
     strategyProposal = {
       title: `🌧️ 호우 안전 대책 (강수량 ${weather.intensity}mm)`,
       actionItems: [`안전 감속 운행 중 (속도 ${Math.round(speedFactor * 100)}%)`, `실제 배차 ${effectiveHeadway.toFixed(1)}분 (${delayRatio}배 지연)`],
-      tone: 'negative'
+      tone: 'negative' as const
     };
   } else if (congestionPercent >= 100) {
     strategyProposal = {
       title: '🚨 수송 용량 포화',
       actionItems: [`배차 간격 ${Math.max(3, tramHeadway - 2)}분으로 즉시 단축`, '예비 차량 전량 투입'],
-      tone: 'danger'
+      tone: 'danger' as const
     };
   } else if (congestionPercent < 50) {
-    strategyProposal = { title: '💸 운영 효율화 필요', actionItems: ['배차 간격 확대하여 예산 절감', '탄력 배차제 도입'], tone: 'negative' };
+    strategyProposal = { title: '💸 운영 효율화 필요', actionItems: ['배차 간격 확대하여 예산 절감', '탄력 배차제 도입'], tone: 'negative' as const };
   } else if (isBudgetOk && congestionPercent >= 70 && congestionPercent <= 95) {
-    strategyProposal = { title: '🌟 최적의 황금 정책', actionItems: ['현재 설정 유지 권장', '스마트 쉘터 구축 제안'], tone: 'positive' };
+    strategyProposal = { title: '🌟 최적의 황금 정책', actionItems: ['현재 설정 유지 권장', '스마트 쉘터 구축 제안'], tone: 'positive' as const };
   } else if (deltaBudget > baseBusCostYear * 0.2) {
-    strategyProposal = { title: '💰 예산 초과 경고', actionItems: ['버스 노선 추가 감축 검토', '운행 횟수 조정'], tone: 'negative' };
+    strategyProposal = { title: '💰 예산 초과 경고', actionItems: ['버스 노선 추가 감축 검토', '운행 횟수 조정'], tone: 'negative' as const };
   } else {
-    strategyProposal = { title: '⚖️ 정책 미세 조정 필요', actionItems: ['배차 간격 1~2분 조정 권장'], tone: 'neutral' };
+    strategyProposal = { title: '⚖️ 정책 미세 조정 필요', actionItems: ['배차 간격 1~2분 조정 권장'], tone: 'neutral' as const };
   }
 
   return {
@@ -108,12 +120,15 @@ const runPolicySimulation = (inputs, weather = { type: 'sunny', intensity: 0 }) 
 /**
  * 정책 판단 (🟢/🟡/🔴). 날씨 악화 시 별도 경고 상태를 우선 반환한다.
  */
-const judgePolicy = (results, weather = { type: 'sunny', intensity: 0 }) => {
+const judgePolicy = (
+  results: PolicySimulationResult,
+  weather: WeatherCondition = { type: 'sunny', intensity: 0 }
+): PolicyJudgement => {
   const { congestionPercent, complaintScore, budgetChangePercent } = results;
 
   let status = '🟡 시범 적용 권장';
   let comment = '혼잡도 또는 민원 위험에 대해 추가 모니터링이 필요합니다.';
-  let color = 'yellow';
+  let color: PolicyJudgement['color'] = 'yellow';
   let isRecommended = false;
 
   if (weather.type !== 'sunny') {
@@ -146,11 +161,14 @@ const judgePolicy = (results, weather = { type: 'sunny', intensity: 0 }) => {
  * 전체 시나리오(배차 3~15분 x 버스감축 0~50%)를 완전탐색하여
  * 🔴가 아닌 시나리오 중 예산 증감률이 가장 낮은 대안을 추천한다 (Greedy).
  */
-const findAlternative = (baseInputs, weather = { type: 'sunny', intensity: 0 }) => {
+const findAlternative = (
+  baseInputs: PolicyInputs,
+  weather: WeatherCondition = { type: 'sunny', intensity: 0 }
+): AlternativeSearchResult => {
   const HEADWAYS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const BUS_CUTS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
-  const searchSpace = [];
+  const searchSpace: AlternativeScenario[] = [];
   for (const tramHeadway of HEADWAYS) {
     for (const busCut of BUS_CUTS) {
       const inputs = { ...baseInputs, tramHeadway, busCut };
@@ -169,4 +187,4 @@ const findAlternative = (baseInputs, weather = { type: 'sunny', intensity: 0 }) 
   return { found: true, ...validScenarios[0] };
 };
 
-module.exports = { runPolicySimulation, judgePolicy, findAlternative };
+export { runPolicySimulation, judgePolicy, findAlternative };

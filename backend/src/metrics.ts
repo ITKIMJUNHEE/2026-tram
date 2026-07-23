@@ -1,9 +1,10 @@
-const client = require('prom-client');
+import client, { Registry, Histogram, Counter } from 'prom-client';
+import { Request, Response, NextFunction } from 'express';
 
-const register = new client.Registry();
+const register = new Registry();
 client.collectDefaultMetrics({ register });
 
-const httpRequestDuration = new client.Histogram({
+const httpRequestDuration = new Histogram({
   name: 'http_request_duration_seconds',
   help: 'HTTP 요청 처리 시간(초)',
   labelNames: ['method', 'route', 'status_code'],
@@ -11,14 +12,14 @@ const httpRequestDuration = new client.Histogram({
   registers: [register],
 });
 
-const httpRequestsTotal = new client.Counter({
+const httpRequestsTotal = new Counter({
   name: 'http_requests_total',
   help: '처리한 HTTP 요청 수',
   labelNames: ['method', 'route', 'status_code'],
   registers: [register],
 });
 
-function metricsMiddleware(req, res, next) {
+function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
   const start = process.hrtime.bigint();
   res.on('finish', () => {
     const route = req.route ? `${req.baseUrl}${req.route.path}` : req.path;
@@ -30,4 +31,4 @@ function metricsMiddleware(req, res, next) {
   next();
 }
 
-module.exports = { register, metricsMiddleware };
+export { register, metricsMiddleware };

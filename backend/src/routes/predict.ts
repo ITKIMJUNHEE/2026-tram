@@ -1,14 +1,15 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const { pool } = require('../db/connection');
-const { runPredictionSimulation } = require('../engine/predictionEngine');
+import express, { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { pool } from '../db/connection';
+import { runPredictionSimulation } from '../engine/predictionEngine';
+import { BusDataItem, PredictionStationInput, PredictRequestBody, StationRow, WeatherCondition } from '../types';
 
 const router = express.Router();
 
 const BUS_DATA_DIR = path.join(__dirname, '..', 'data', 'bus');
 
-const loadBusDataForMonth = (month) => {
+const loadBusDataForMonth = (month: number): BusDataItem[] => {
   const filePath = path.join(BUS_DATA_DIR, `data_${month}.json`);
   if (!fs.existsSync(filePath)) return [];
   try {
@@ -18,8 +19,8 @@ const loadBusDataForMonth = (month) => {
   }
 };
 
-const loadStationsForPrediction = async () => {
-  const { rows } = await pool.query('SELECT * FROM stations ORDER BY id');
+const loadStationsForPrediction = async (): Promise<PredictionStationInput[]> => {
+  const { rows } = await pool.query<StationRow>('SELECT * FROM stations ORDER BY id');
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -32,18 +33,18 @@ const loadStationsForPrediction = async () => {
   }));
 };
 
-const getSeasonalWeather = (month) => {
+const getSeasonalWeather = (month: number): WeatherCondition => {
   if (month === 7 || month === 8) return { type: 'rain', intensity: 60 };
   if (month === 12 || month === 1 || month === 2) return { type: 'snow', intensity: 50 };
   return { type: 'sunny', intensity: 0 };
 };
 
-router.get('/bus-data/:month', (req, res) => {
+router.get('/bus-data/:month', (req: Request, res: Response) => {
   const month = Number(req.params.month);
   res.json(loadBusDataForMonth(month));
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', async (req: Request<unknown, unknown, PredictRequestBody>, res: Response, next: NextFunction) => {
   try {
     const { tramInterval, busReduction, signalLevel, isAiMode, timeSlot, month } = req.body || {};
     if (!tramInterval || busReduction === undefined) {
@@ -61,4 +62,4 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

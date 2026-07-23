@@ -1,27 +1,38 @@
-const fs = require('fs');
-const path = require('path');
-const { pool, ensureSchema } = require('./connection');
+import fs from 'fs';
+import path from 'path';
+import { pool, ensureSchema } from './connection';
+import { StationRow } from '../types';
 
 const CSV_PATH = path.join(__dirname, '..', 'data', 'tram_stations.csv');
 const META_PATH = path.join(__dirname, '..', 'data', 'stationMeta.json');
 
-function parseStationsCsv(csvText) {
+interface StationMetaEntry {
+  predictionBase?: number;
+  commercialScore?: number;
+  areaType?: string;
+}
+
+type StationMeta = Record<string, StationMetaEntry | undefined>;
+
+type CsvRow = Record<string, string>;
+
+function parseStationsCsv(csvText: string): CsvRow[] {
   const [headerLine, ...lines] = csvText.trim().split(/\r?\n/);
   const headers = headerLine.split(',');
   return lines.filter(Boolean).map((line) => {
     const cells = line.split(',');
-    const row = {};
+    const row: CsvRow = {};
     headers.forEach((h, i) => { row[h] = cells[i]; });
     return row;
   });
 }
 
-async function seedStations() {
+async function seedStations(): Promise<void> {
   const csvText = fs.readFileSync(CSV_PATH, 'utf-8');
-  const stationMeta = JSON.parse(fs.readFileSync(META_PATH, 'utf-8'));
+  const stationMeta: StationMeta = JSON.parse(fs.readFileSync(META_PATH, 'utf-8'));
   const rows = parseStationsCsv(csvText);
 
-  const merged = rows.map((row) => {
+  const merged: StationRow[] = rows.map((row) => {
     const meta = stationMeta[row.station_id] || {};
     return {
       id: Number(row.station_id),
@@ -81,7 +92,7 @@ async function seedStations() {
   console.log(`[seed] ${merged.length}개 정거장 데이터 시딩 완료`);
 }
 
-async function main() {
+async function main(): Promise<void> {
   await ensureSchema();
   await seedStations();
   await pool.end();

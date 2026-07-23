@@ -8,7 +8,22 @@
  * 동작을 바꾸지 않기 위해 원본 그대로 이식했다 (버스 정류장 좌표는 지도 표시용으로만 사용됨).
  */
 
-const runPredictionSimulation = (stations, interval, busReduction, busData = [], signalLevel = 2, isAiMode = false, timeSlot = 'day') => {
+import {
+  BusDataItem,
+  PredictionStationInput,
+  PredictionStationResult,
+  PredictionSimulationResult
+} from '../types';
+
+const runPredictionSimulation = (
+  stations: PredictionStationInput[],
+  interval: number,
+  busReduction: number,
+  busData: BusDataItem[] = [],
+  signalLevel: number = 2,
+  isAiMode: boolean = false,
+  timeSlot: string = 'day'
+): PredictionSimulationResult => {
   const BASE_FIXED_COST = 3000;
   let timeMultiplier = 1.0;
   let demandLabel = '평시';
@@ -19,7 +34,7 @@ const runPredictionSimulation = (stations, interval, busReduction, busData = [],
 
   let totalAllPassengers = 0;
 
-  const detailedStations = stations.map((st) => {
+  const detailedStations: PredictionStationResult[] = stations.map((st) => {
     let stationPassengers = st.base;
 
     let typeFactor = 1.0;
@@ -93,4 +108,4 @@ const runPredictionSimulation = (stations, interval, busReduction, busData = [],
   };
 };
 
-module.exports = { runPredictionSimulation };
+export { runPredictionSimulation };

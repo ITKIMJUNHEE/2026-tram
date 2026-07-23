@@ -1,14 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const { ensureSchema } = require('./db/connection');
-const { register, metricsMiddleware } = require('./metrics');
+import express from 'express';
+import cors from 'cors';
+import { ensureSchema } from './db/connection';
+import { register, metricsMiddleware } from './metrics';
 
-const stationsRouter = require('./routes/stations');
-const simulateRouter = require('./routes/simulate');
-const predictRouter = require('./routes/predict');
-const logsRouter = require('./routes/logs');
-const scenariosRouter = require('./routes/scenarios');
-const weatherRouter = require('./routes/weather');
+import stationsRouter from './routes/stations';
+import simulateRouter from './routes/simulate';
+import predictRouter from './routes/predict';
+import logsRouter from './routes/logs';
+import scenariosRouter from './routes/scenarios';
+import weatherRouter from './routes/weather';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -31,7 +31,7 @@ app.use('/api/logs', logsRouter);
 app.use('/api/scenarios', scenariosRouter);
 app.use('/api/weather', weatherRouter);
 
-async function main() {
+async function main(): Promise<void> {
   await ensureSchema();
   app.listen(PORT, () => {
     console.log(`[server] 대전 트램 시뮬레이션 API가 http://localhost:${PORT} 에서 실행 중입니다.`);
