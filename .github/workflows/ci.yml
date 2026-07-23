@@ -69,9 +69,10 @@ jobs:
 
       - name: Update image tags in k8s manifests
         run: |
-          SHORT_SHA="${GITHUB_SHA::7}"
-          sed -i -E "s|image: .*2026-tram-server(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-server:${SHORT_SHA}|" k8s/server.yaml
-          sed -i -E "s|image: .*2026-tram-client(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-client:${SHORT_SHA}|" k8s/client.yaml
+          # docker/metadata-action의 type=sha 기본 prefix는 "sha-"이므로 태그명도 동일하게 맞춘다.
+          IMAGE_TAG="sha-${GITHUB_SHA::7}"
+          sed -i -E "s|image: .*2026-tram-server(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-server:${IMAGE_TAG}|" k8s/server.yaml
+          sed -i -E "s|image: .*2026-tram-client(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-client:${IMAGE_TAG}|" k8s/client.yaml
           sed -i "/imagePullPolicy: IfNotPresent/d" k8s/server.yaml k8s/client.yaml
 
       - name: Commit and push updated manifests
