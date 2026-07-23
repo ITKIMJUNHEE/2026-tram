@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { ensureSchema } = require('./db/connection');
+const { register, metricsMiddleware } = require('./metrics');
 
 const stationsRouter = require('./routes/stations');
 const simulateRouter = require('./routes/simulate');
@@ -14,8 +15,14 @@ const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(metricsMiddleware);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+app.get('/api/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 
 app.use('/api/stations', stationsRouter);
 app.use('/api/simulate', simulateRouter);
