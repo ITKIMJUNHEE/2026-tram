@@ -15,8 +15,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: 2026-tram-client:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/itkimjunhee/2026-tram-client:3d93e8b
           ports:
             - containerPort: 80
           readinessProbe:
