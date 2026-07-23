@@ -2,12 +2,12 @@
   "name": "daejeon-tram-simulator",
   "version": "1.0.0",
   "private": true,
-  "description": "대전 트램 AI 시뮬레이션 - React + Express + SQLite 3-Tier 애플리케이션",
+  "description": "대전 트램 AI 시뮬레이션 - React + Express + PostgreSQL 3-Tier 애플리케이션",
   "scripts": {
-    "install:all": "npm install --prefix server && npm install --prefix client",
-    "dev": "concurrently -n SERVER,CLIENT -c blue,green \"npm run dev --prefix server\" \"npm start --prefix client\"",
-    "seed": "npm run seed --prefix server",
-    "build": "npm run build --prefix client"
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev": "concurrently -n SERVER,CLIENT -c blue,green \"npm run dev --prefix backend\" \"npm start --prefix frontend\"",
+    "seed": "npm run seed --prefix backend",
+    "build": "npm run build --prefix frontend"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

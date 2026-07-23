@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/ITKIMJUNHEE/2026-tram.git
     targetRevision: main
-    path: k8s
+    path: infra/k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: tram
