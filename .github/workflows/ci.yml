@@ -70,8 +70,9 @@ jobs:
       - name: Update image tags in k8s manifests
         run: |
           SHORT_SHA="${GITHUB_SHA::7}"
-          sed -i "s|image: ${REGISTRY}/itkimjunhee/2026-tram-server:.*|image: ${REGISTRY}/itkimjunhee/2026-tram-server:${SHORT_SHA}|" k8s/server.yaml
-          sed -i "s|image: ${REGISTRY}/itkimjunhee/2026-tram-client:.*|image: ${REGISTRY}/itkimjunhee/2026-tram-client:${SHORT_SHA}|" k8s/client.yaml
+          sed -i -E "s|image: .*2026-tram-server(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-server:${SHORT_SHA}|" k8s/server.yaml
+          sed -i -E "s|image: .*2026-tram-client(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-client:${SHORT_SHA}|" k8s/client.yaml
+          sed -i "/imagePullPolicy: IfNotPresent/d" k8s/server.yaml k8s/client.yaml
 
       - name: Commit and push updated manifests
         run: |
