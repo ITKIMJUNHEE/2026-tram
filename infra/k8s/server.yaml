@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/itkimjunhee/2026-tram-server:sha-fd6b3ed
+          image: ghcr.io/itkimjunhee/2026-tram-server:sha-e1a54f0
           ports:
             - containerPort: 4000
           env:
