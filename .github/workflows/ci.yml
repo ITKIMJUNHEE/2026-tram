@@ -25,6 +25,9 @@ jobs:
           - name: client
             context: ./frontend
             image: ghcr.io/itkimjunhee/2026-tram-client
+          - name: ml-service
+            context: ./ml-service
+            image: ghcr.io/itkimjunhee/2026-tram-ml-service
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,13 +76,14 @@ jobs:
           IMAGE_TAG="sha-${GITHUB_SHA::7}"
           sed -i -E "s|image: .*2026-tram-server(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-server:${IMAGE_TAG}|" infra/k8s/server.yaml
           sed -i -E "s|image: .*2026-tram-client(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-client:${IMAGE_TAG}|" infra/k8s/client.yaml
+          sed -i -E "s|image: .*2026-tram-ml-service(:.*)?|image: ${REGISTRY}/itkimjunhee/2026-tram-ml-service:${IMAGE_TAG}|" infra/k8s/ml-service.yaml
           sed -i "/imagePullPolicy: IfNotPresent/d" infra/k8s/server.yaml infra/k8s/client.yaml
 
       - name: Commit and push updated manifests
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add infra/k8s/server.yaml infra/k8s/client.yaml
+          git add infra/k8s/server.yaml infra/k8s/client.yaml infra/k8s/ml-service.yaml
           if git diff --cached --quiet; then
             echo "No manifest changes to commit"
             exit 0

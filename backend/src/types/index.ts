@@ -157,11 +157,14 @@ export interface PredictionSimulationResult {
 /* simulation_logs 테이블                                                     */
 /* -------------------------------------------------------------------------- */
 
+/** input_json/results_json은 구조화된 객체가 아니라 프론트엔드(TramSimulation.jsx의
+ * handleAcceptPolicy)가 만들어 보내는 사람이 읽는 요약 문자열이다 (예: "배차 6분 / 감축 20%").
+ * DecisionLog 컴포넌트가 그대로 텍스트로 렌더링하는 것에서도 문자열임이 확인된다. */
 export interface SimulationLogRow {
   id: number;
   created_at: Date;
-  input_json: PolicyInputs;
-  results_json: PolicySimulationResult;
+  input_json: string;
+  results_json: string;
   judgement_status: string;
   judgement_comment: string;
   report_summary: string;
@@ -170,16 +173,16 @@ export interface SimulationLogRow {
 export interface SimulationLogDto {
   id: number;
   createdAt: Date;
-  input: PolicyInputs;
-  results: PolicySimulationResult;
+  input: string;
+  results: string;
   judgementStatus: string;
   judgementComment: string;
   reportSummary: string;
 }
 
 export interface CreateSimulationLogBody {
-  input: PolicyInputs;
-  results: PolicySimulationResult;
+  input: string;
+  results: string;
   judgementStatus: string;
   judgementComment?: string;
   reportSummary?: string;
@@ -233,4 +236,20 @@ export interface WeatherApiResponse {
   temp: number;
   desc: string;
   icon: string;
+}
+
+/** POST /api/predict/ml 요청 바디. ml-service의 /predict 스키마와 동일하게 맞춘다. */
+export interface MlPredictRequestBody {
+  commercial_score: number;
+  area_type: string;
+  is_shared: boolean;
+  base_passengers: number;
+  day_type: string;
+  time_slot: string;
+  weather: string;
+}
+
+export interface MlPredictResponse {
+  predicted_passengers: number;
+  source?: 'rule-based-fallback';
 }

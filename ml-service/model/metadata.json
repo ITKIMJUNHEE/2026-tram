@@ -1,0 +1,9 @@
+{
+  "trained_at": "2026-07-23T09:20:04.492064+00:00",
+  "mae": 226.73,
+  "r2": 0.9854,
+  "training_rows": 5400,
+  "synthetic_rows": 5400,
+  "real_rows": 0,
+  "model_type": "RandomForestRegressor"
+}

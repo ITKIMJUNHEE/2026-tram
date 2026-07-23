@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-service
+  namespace: tram
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-service
+  template:
+    metadata:
+      labels:
+        app: ml-service
+    spec:
+      containers:
+        - name: ml-service
+          image: ghcr.io/itkimjunhee/2026-tram-ml-service:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-service
+  namespace: tram
+spec:
+  selector:
+    app: ml-service
+  ports:
+    - port: 8000
+      targetPort: 8000

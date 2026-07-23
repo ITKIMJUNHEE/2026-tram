@@ -24,6 +24,9 @@ spec:
               value: "postgresql://tram:tram@postgres:5432/tram_db"
             - name: PORT
               value: "4000"
+            # k8s Service 이름(ml-service)이 호스트명이 된다.
+            - name: ML_SERVICE_URL
+              value: "http://ml-service:8000"
           readinessProbe:
             httpGet:
               path: /api/health

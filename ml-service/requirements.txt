@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+scikit-learn
+pandas
+joblib
+psycopg2-binary
