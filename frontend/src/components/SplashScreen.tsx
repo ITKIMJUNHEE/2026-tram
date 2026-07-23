@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, CSSProperties } from 'react';
 
-const SplashScreen = ({ finishLoading }) => {
+interface SplashScreenProps {
+  finishLoading: () => void;
+}
+
+const SplashScreen = ({ finishLoading }: SplashScreenProps) => {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
@@ -28,10 +32,10 @@ const SplashScreen = ({ finishLoading }) => {
     }}>
       <div style={styles.logoContainer}>
         {/* 로고 이미지 경로 확인 필수: public/logo.png */}
-        <img 
-          src="/logo.png" 
-          alt="트램ON" 
-          style={styles.logoImage} 
+        <img
+          src="/logo.png"
+          alt="트램ON"
+          style={styles.logoImage}
         />
         <div style={styles.loadingBarContainer}>
           <div style={styles.loadingBar}></div>
@@ -41,7 +45,7 @@ const SplashScreen = ({ finishLoading }) => {
   );
 };
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   container: {
     position: 'fixed', // 화면에 고정
     top: 0,

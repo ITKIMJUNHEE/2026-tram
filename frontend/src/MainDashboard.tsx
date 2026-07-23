@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TramMap from './components/TramMap';
+import TramMap, { DashboardStation, Accident, Complaint } from './components/TramMap';
 import { getStations, getWeather } from './api/client';
 import {
   ArrowRight, Sun, CloudRain, Snowflake, LogOut, Siren,
@@ -9,21 +9,51 @@ import {
   Activity, Radio, Droplets, Leaf, Cpu, Gauge, X
 } from 'lucide-react';
 
-const ACCIDENT_SCENARIOS = [
+interface AccidentScenario {
+  type: string;
+  title: string;
+  desc: string;
+  action: string;
+  stId: number;
+}
+
+interface ComplaintTemplate {
+  type: string;
+  msg: string;
+}
+
+interface AiStats {
+  speed: number;
+  hydrogen: number;
+  accuracy: number;
+}
+
+interface RealWeatherDisplay {
+  temp: number | string;
+  desc: string;
+  icon: string;
+}
+
+interface ToastState {
+  show: boolean;
+  msg: string;
+}
+
+const ACCIDENT_SCENARIOS: AccidentScenario[] = [
     { type: '추돌 사고', title: "⚠️ 3중 추돌 사고 발생", desc: "차량 통제 및 정체 극심. 우회 경로 안내 필요.", action: "police", stId: 202 },
     { type: '차량 고장', title: "🚋 수소 연료 스택 이상", desc: "전압 불안정 감지. 예비 전력 전환 및 점검 요망.", action: "tech", stId: 225 },
     { type: '화재 감지', title: "🔥 선로 주변 화재 발생", desc: "연기 유입 우려. 해당 구간 운행 일시 중단.", action: "fire", stId: 211 },
     { type: '선로 침수', title: "💧 집중 호우로 인한 침수", desc: "갑천 수위 상승. 서행 운전 및 배수 작업 필요.", action: "tech", stId: 221 },
 ];
 
-const COMPLAINT_POOL = [
+const COMPLAINT_POOL: ComplaintTemplate[] = [
     { type: 'TEMP', msg: "에어컨 온도가 너무 높아요 💦" },
     { type: 'DELAY', msg: "배차 간격이 너무 깁니다! 20분째 대기중..." },
     { type: 'CROWD', msg: "사람이 너무 많아서 못 타겠어요. 숨막혀요." },
     { type: 'CLEAN', msg: "좌석에 음료가 쏟아져 있어요. 끈적거립니다." }
 ];
 
-const AI_LOGS = [
+const AI_LOGS: string[] = [
     "실시간 평균 운행 속도 분석 중... (Target: 19.82km/h)",
     "구간별 혼잡도 예측 모델링 업데이트 완료",
     "수소 연료 전지 스택(Stack) 효율 모니터링: 98%",
@@ -35,22 +65,22 @@ const AI_LOGS = [
 
 const MainDashboard = () => {
   const navigate = useNavigate();
-  
-  const [stations, setStations] = useState([]);
+
+  const [stations, setStations] = useState<DashboardStation[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [accidents, setAccidents] = useState([]);
-  const [complaints, setComplaints] = useState([]);
-  const [toast, setToast] = useState({ show: false, msg: '' });
-  const [selectedStation, setSelectedStation] = useState(null);
-  const [realWeather, setRealWeather] = useState({ temp: '-', desc: '기상청 연결중...', icon: 'Loading' });
-  const [aiStats, setAiStats] = useState({ speed: 19.8, hydrogen: 85, accuracy: 99.2 });
-  const [logs, setLogs] = useState([]);
+  const [accidents, setAccidents] = useState<Accident[]>([]);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [toast, setToast] = useState<ToastState>({ show: false, msg: '' });
+  const [selectedStation, setSelectedStation] = useState<DashboardStation | null>(null);
+  const [realWeather, setRealWeather] = useState<RealWeatherDisplay>({ temp: '-', desc: '기상청 연결중...', icon: 'Loading' });
+  const [aiStats, setAiStats] = useState<AiStats>({ speed: 19.8, hydrogen: 85, accuracy: 99.2 });
+  const [logs, setLogs] = useState<string[]>([]);
   const [showBriefing, setShowBriefing] = useState(false);
 
   useEffect(() => {
     getStations()
       .then((data) => {
-        const validData = data.map((st) => ({
+        const validData: DashboardStation[] = data.map((st) => ({
           id: st.id,
           name: st.name,
           lat: st.lat,
@@ -67,13 +97,13 @@ const MainDashboard = () => {
     const timer = setInterval(() => {
         setCurrentTime(new Date());
         setAiStats(prev => ({
-            speed: +(19.82 + (Math.random() * 0.4 - 0.2)).toFixed(2), 
+            speed: +(19.82 + (Math.random() * 0.4 - 0.2)).toFixed(2),
             hydrogen: Math.max(20, prev.hydrogen - 0.02),
             accuracy: +(99 + Math.random() * 0.9).toFixed(1)
         }));
         if (Math.random() > 0.7) {
             const newLog = AI_LOGS[Math.floor(Math.random() * AI_LOGS.length)];
-            setLogs(prev => [...prev.slice(-4), `[${new Date().toLocaleTimeString().split(' ')[0]}] ${newLog}`]); 
+            setLogs(prev => [...prev.slice(-4), `[${new Date().toLocaleTimeString().split(' ')[0]}] ${newLog}`]);
         }
     }, 1000);
     return () => clearInterval(timer);
@@ -94,14 +124,15 @@ const MainDashboard = () => {
 
   useEffect(() => {
     if (stations.length === 0) return;
-    const initialTimer = setTimeout(() => triggerAccident(), 5000); 
-    const loopInterval = setInterval(() => triggerAccident(), 25000); 
+    const initialTimer = setTimeout(() => triggerAccident(), 5000);
+    const loopInterval = setInterval(() => triggerAccident(), 25000);
     return () => { clearTimeout(initialTimer); clearInterval(loopInterval); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stations]);
 
   const triggerAccident = () => {
     const scenario = ACCIDENT_SCENARIOS[Math.floor(Math.random() * ACCIDENT_SCENARIOS.length)];
-    const newAccident = {
+    const newAccident: Accident = {
         id: Date.now(),
         stationId: scenario.stId,
         title: scenario.title,
@@ -111,7 +142,7 @@ const MainDashboard = () => {
         processing: false
     };
     setAccidents(prev => {
-        const next = prev.length >= 2 ? prev.slice(1) : prev; 
+        const next = prev.length >= 2 ? prev.slice(1) : prev;
         return [...next, newAccident];
     });
   };
@@ -121,7 +152,7 @@ const MainDashboard = () => {
         if (stations.length === 0) return;
         const randomStation = stations[Math.floor(Math.random() * stations.length)];
         const randomContent = COMPLAINT_POOL[Math.floor(Math.random() * COMPLAINT_POOL.length)];
-        const newComplaint = {
+        const newComplaint: Complaint = {
             id: Date.now(),
             stationId: randomStation.id,
             stationName: randomStation.name,
@@ -135,7 +166,7 @@ const MainDashboard = () => {
     return () => clearInterval(interval);
   }, [stations]);
 
-  const handleResolveComplaint = (id, actionType) => {
+  const handleResolveComplaint = (id: number, actionType: string) => {
     let confirmMsg = "";
     if (actionType === 'TEMP') confirmMsg = "🌡️ 차량 공조기 제어: 설정 온도 -2°C 조정 완료";
     else if (actionType === 'CLEAN') confirmMsg = "🧹 청소 기동반 호출 완료: 다음 정차역 대기";
@@ -148,7 +179,7 @@ const MainDashboard = () => {
     setComplaints(prev => prev.map(c => c.id === id ? { ...c, status: 'done' } : c));
   };
 
-  const handleResolveAccident = (id, type) => {
+  const handleResolveAccident = (id: number, type: string) => {
     setAccidents(prev => prev.map(a => a.id === id ? { ...a, processing: true } : a));
     setTimeout(() => {
         let msg = "";
@@ -175,7 +206,7 @@ const MainDashboard = () => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-50 font-sans text-slate-800">
-      
+
       {/* 🚨 긴급 배너 (슬림형) */}
       {accidents.length > 0 && (
         <div className="absolute top-0 left-0 w-full z-[1000] bg-red-600 shadow-xl text-white px-6 py-2 flex items-center justify-between animate-slide-down">
@@ -192,11 +223,11 @@ const MainDashboard = () => {
 
       {/* 🗺️ 지도 */}
       <div className="absolute top-0 left-0 w-full h-full z-0">
-        <TramMap 
-            stations={stations} 
-            accidents={accidents} 
+        <TramMap
+            stations={stations}
+            accidents={accidents}
             complaints={complaints}
-            onMarkerClick={setSelectedStation} 
+            onMarkerClick={setSelectedStation}
         />
       </div>
 
@@ -237,7 +268,7 @@ const MainDashboard = () => {
 
       {/* 🖥️ [하단 통합 관제 콘솔] */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-[98%] h-72 z-40 flex gap-4 pointer-events-none">
-        
+
         {/* 1. 재난 감지 */}
         <div className="w-[380px] bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-100 overflow-hidden pointer-events-auto flex flex-col">
             <div className="bg-red-50 px-5 py-3 border-b border-red-100 flex justify-between items-center">
@@ -279,7 +310,7 @@ const MainDashboard = () => {
                     <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold flex items-center gap-1"><Leaf size={10}/> 친환경</span>
                 </div>
             </div>
-            
+
             <div className="flex-1 p-5 flex gap-4">
                 <div className="grid grid-cols-2 gap-3 w-1/2">
                     <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100 flex flex-col justify-between">
@@ -293,7 +324,7 @@ const MainDashboard = () => {
                             <span className="text-[10px] text-blue-500 font-bold ml-2">Target 19.82</span>
                         </div>
                     </div>
-                    
+
                     <div className="bg-indigo-50/50 rounded-xl p-3 border border-indigo-100 flex flex-col justify-between">
                         <div className="text-slate-500 text-xs font-bold mb-1 flex items-center gap-1"><Cpu size={12}/> AI 예측 정확도</div>
                         <div className="text-2xl font-black text-slate-900">{aiStats.accuracy}%</div>
@@ -374,7 +405,7 @@ const MainDashboard = () => {
 
       {/* ✅ 알림 토스트 */}
       <div className={`absolute top-32 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-full shadow-2xl transition-all duration-300 z-[9999] flex items-center gap-3 backdrop-blur-md ${toast.show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10 pointer-events-none'}`}>
-        <CheckCircle className="text-green-400" size={24}/> 
+        <CheckCircle className="text-green-400" size={24}/>
         <span className="font-bold text-lg">{toast.msg}</span>
       </div>
 
@@ -395,19 +426,19 @@ const MainDashboard = () => {
                             <li>돌발 상황: <strong>{accidents.length > 0 ? accidents[accidents.length-1].title : '특이사항 없음'}</strong></li>
                         </ul>
                     </div>
-                    
+
                     <div className="mb-6">
                         <label className="block text-xs font-bold text-slate-500 mb-2">AI 자동 생성 메시지 (초안)</label>
-                        <textarea 
+                        <textarea
                             className="w-full h-32 bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-700 text-sm focus:outline-none focus:border-blue-500 resize-none font-medium leading-relaxed"
                             readOnly
-                            value={accidents.length > 0 
+                            value={accidents.length > 0
                                 ? `[긴급] 현재 ${accidents[accidents.length-1].title}로 인해 일부 구간 지연이 예상됩니다. 우회 교통수단을 이용해주시기 바랍니다. (예상 복구: 15분)`
                                 : `[안내] 현재 대전 트램은 정시 운행 중입니다. 현재 기온은 ${realWeather.temp}°C이며 쾌적한 환경을 위해 냉난방 시스템이 가동 중입니다. 안전한 하루 되세요.`}
                         />
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => {
                             setToast({ show: true, msg: "📢 시민 안내 메시지가 전송되었습니다." });
                             setTimeout(() => setToast(prev => ({ ...prev, show: false })), 2000);

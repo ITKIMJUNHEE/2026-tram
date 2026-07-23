@@ -8,11 +8,12 @@ import {
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import { runPredict } from '../api/client';
+import { WeatherCondition, BusDataItem, PredictionStationResult, PredictionSimulationResult, PredictRequestParams } from '../types/api';
 
 // ==========================================
 // [0] 유틸리티 함수
 // ==========================================
-const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+const getDistanceFromLatLonInKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
@@ -22,20 +23,34 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
 };
 
 // 월별 계절 기본 날씨 (사용자가 이후 직접 조정 가능한 UI 기본값일 뿐, 실제 혼잡도 연산은 서버가 담당)
-const getSeasonalDefault = (month) => {
+const getSeasonalDefault = (month: number): WeatherCondition => {
   if (month === 7 || month === 8) return { type: 'rain', intensity: 60 };
   if (month === 12 || month === 1 || month === 2) return { type: 'snow', intensity: 50 };
   return { type: 'sunny', intensity: 0 };
 };
 
+interface PredictionParams extends PredictRequestParams {
+  tramInterval: number;
+  busReduction: number;
+  signalLevel: number;
+  isAiMode: boolean;
+  timeSlot: string;
+  month: number;
+}
+
 // ==========================================
 // [1] 컴포넌트
 // ==========================================
 
-const Sidebar = ({ params, setParams }) => {
-  const handleChange = (e) => setParams({ ...params, [e.target.name]: Number(e.target.value) });
-  const handleMonthChange = (e) => setParams({ ...params, month: Number(e.target.value) });
-  const handleTimeChange = (newTimeSlot) => {
+interface SidebarProps {
+  params: PredictionParams;
+  setParams: (params: PredictionParams) => void;
+}
+
+const Sidebar = ({ params, setParams }: SidebarProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setParams({ ...params, [e.target.name]: Number(e.target.value) });
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => setParams({ ...params, month: Number(e.target.value) });
+  const handleTimeChange = (newTimeSlot: string) => {
     let newInterval = params.tramInterval;
     if (params.isAiMode) {
       if (newTimeSlot === 'morning') newInterval = 4;
@@ -44,7 +59,7 @@ const Sidebar = ({ params, setParams }) => {
     }
     setParams({ ...params, timeSlot: newTimeSlot, tramInterval: newInterval });
   };
-  const toggleAiMode = (e) => {
+  const toggleAiMode = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isAi = e.target.checked;
     let newInterval = params.tramInterval;
     if (isAi) {
@@ -103,9 +118,22 @@ const Sidebar = ({ params, setParams }) => {
   );
 };
 
-const KPICards = ({ results }) => {
+interface KPICardsProps {
+  results: PredictionSimulationResult | null;
+}
+
+interface CardProps {
+  title: string;
+  value: string | number;
+  unit: string;
+  color: string;
+  icon: React.ComponentType<{ className?: string }>;
+  subtext: string;
+}
+
+const KPICards = ({ results }: KPICardsProps) => {
   if (!results) return null;
-  const Card = ({ title, value, unit, color, icon: Icon, subtext }) => (
+  const Card = ({ title, value, unit, color, icon: Icon, subtext }: CardProps) => (
     <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-md border-l-4 border-transparent hover:border-blue-500 transition-all text-slate-800">
       <div className="flex justify-between items-start">
         <div><p className="text-slate-500 text-[11px] font-bold uppercase">{title}</p><h3 className="text-xl font-black mt-0.5">{value} <span className="text-xs font-normal text-slate-400">{unit}</span></h3></div>
@@ -122,8 +150,14 @@ const KPICards = ({ results }) => {
   );
 };
 
-const TramMap = ({ simulationResult, busStops = [], weather = { type: 'sunny', intensity: 0 } }) => {
-  const stations = useMemo(() => {
+interface PredictionTramMapProps {
+  simulationResult: PredictionSimulationResult | null;
+  busStops?: BusDataItem[];
+  weather?: WeatherCondition;
+}
+
+const TramMap = ({ simulationResult, busStops = [], weather = { type: 'sunny', intensity: 0 } }: PredictionTramMapProps) => {
+  const stations = useMemo((): PredictionStationResult[] => {
     const rawStations = simulationResult?.stations || [];
     return rawStations.map(st => {
       let multiplier = 1.0;
@@ -133,17 +167,17 @@ const TramMap = ({ simulationResult, busStops = [], weather = { type: 'sunny', i
     });
   }, [simulationResult, weather]);
 
-  const centerPos = [36.3504, 127.3845];
-  const mainLoopIds = []; for (let i = 201; i <= 240; i++) mainLoopIds.push(i); mainLoopIds.push(201);
+  const centerPos: [number, number] = [36.3504, 127.3845];
+  const mainLoopIds: number[] = []; for (let i = 201; i <= 240; i++) mainLoopIds.push(i); mainLoopIds.push(201);
   const yeonchukBranchIds = [212, 241, 242, 243, 244];
   const jinjamBranchIds = [233, 245];
 
-  const getPathCoords = (idList) => idList.map(id => {
+  const getPathCoords = (idList: number[]): [number, number][] => idList.map(id => {
     const st = stations.find(s => Number(s.id) === Number(id));
-    return st ? [st.lat, st.lon ?? st.lng] : null;
-  }).filter(c => c !== null);
+    return st ? ([st.lat, st.lon ?? st.lng] as [number, number]) : null;
+  }).filter((c): c is [number, number] => c !== null);
 
-  const getStatusColor = (congestion) => {
+  const getStatusColor = (congestion: number): string => {
     if (congestion >= 130) return "#dc2626"; // 130 이상 빨강
     if (congestion >= 90) return "#ea580c"; // 90 이상 주황
     return "#10b981"; // 그 외 초록
@@ -156,8 +190,8 @@ const TramMap = ({ simulationResult, busStops = [], weather = { type: 'sunny', i
 
         {/* 버스 팻말 & 정류장 */}
         {busStops && busStops.map((bus, index) => {
-           const lat = parseFloat(bus.lat);
-           const lng = parseFloat(bus.lon || bus.lng || bus.long || bus.longitude);
+           const lat = parseFloat(String(bus.lat));
+           const lng = parseFloat(String(bus.lon || bus.lng || bus.long || bus.longitude));
            const passengerCount = Number(bus.passengers) || 0;
 
            if (isNaN(lat) || isNaN(lng)) return null;
@@ -219,11 +253,11 @@ const TramMap = ({ simulationResult, busStops = [], weather = { type: 'sunny', i
 
 const TramPredictionMap = () => {
   const navigate = useNavigate();
-  const [params, setParams] = useState({ tramInterval: 10, busReduction: 10, signalLevel: 2, isAiMode: false, timeSlot: 'day', month: 1 });
-  const [results, setResults] = useState(null);
-  const [busData, setBusData] = useState([]);
+  const [params, setParams] = useState<PredictionParams>({ tramInterval: 10, busReduction: 10, signalLevel: 2, isAiMode: false, timeSlot: 'day', month: 1 });
+  const [results, setResults] = useState<PredictionSimulationResult | null>(null);
+  const [busData, setBusData] = useState<BusDataItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [weather, setWeather] = useState({ type: 'sunny', intensity: 0 });
+  const [weather, setWeather] = useState<WeatherCondition>({ type: 'sunny', intensity: 0 });
 
   // 분석 시점(월)이 바뀔 때만 날씨 UI 기본값을 계절에 맞게 재설정
   useEffect(() => {
@@ -282,7 +316,7 @@ const TramPredictionMap = () => {
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/50 shrink-0 pointer-events-auto">
            <div className="flex items-center gap-2 mb-3 text-blue-700"><Sun className="w-4 h-4" /> <h2 className="font-bold text-sm tracking-wide">기상 조건 설정</h2></div>
            <div className="flex gap-2 mb-4">
-              {['sunny', 'rain', 'snow'].map(type => (
+              {(['sunny', 'rain', 'snow'] as const).map(type => (
                 <button key={type} onClick={() => setWeather({ type, intensity: type === 'sunny' ? 0 : 50 })} className={`flex-1 py-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1 transition-all ${weather.type === type ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-500' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
                   {type === 'sunny' ? <Sun size={16}/> : type === 'rain' ? <CloudRain size={16}/> : <Snowflake size={16}/>}{type === 'sunny' ? '맑음' : type === 'rain' ? '비' : '눈'}
                 </button>

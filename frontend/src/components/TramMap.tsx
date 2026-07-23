@@ -3,6 +3,42 @@ import { MapContainer, TileLayer, Marker, Polyline, Tooltip } from 'react-leafle
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+export interface DashboardStation {
+  id: number;
+  name: string;
+  lat: number;
+  lon: number;
+  transfer: string | null;
+  base_passengers: number;
+}
+
+export interface Accident {
+  id: number;
+  stationId: number;
+  title: string;
+  desc: string;
+  actionNeeded: string;
+  type: string;
+  processing: boolean;
+}
+
+export interface Complaint {
+  id: number;
+  stationId: number;
+  stationName: string;
+  type: string;
+  msg: string;
+  time: string;
+  status: string;
+}
+
+interface TramMapProps {
+  stations?: DashboardStation[];
+  accidents?: Accident[];
+  complaints?: Complaint[];
+  onMarkerClick: (station: DashboardStation) => void;
+}
+
 const markerStyle = `
   .ai-marker {
     background-color: rgba(255, 255, 255, 0.95);
@@ -15,13 +51,13 @@ const markerStyle = `
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
   .ai-marker-inner { width: 6px; height: 6px; background-color: #3b82f6; border-radius: 50%; }
-  
-  .status-normal { border-color: #3b82f6; } 
+
+  .status-normal { border-color: #3b82f6; }
   .status-warning { border-color: #f59e0b; .ai-marker-inner { background-color: #f59e0b; } }
 
-  .status-danger { 
+  .status-danger {
     background-color: #fee2e2;
-    border-color: #ef4444; 
+    border-color: #ef4444;
     animation: shockwave 1.5s infinite;
   }
   .status-danger .ai-marker-inner { background-color: #ef4444; }
@@ -33,18 +69,18 @@ const markerStyle = `
   }
 `;
 
-const TramMap = ({ stations = [], accidents = [], complaints = [], onMarkerClick }) => {
-  
+const TramMap = ({ stations = [], accidents = [], complaints = [], onMarkerClick }: TramMapProps) => {
+
   // ⭐ [위치/줌 황금비율] 11.4로 설정하면 위아래 패널이 있어도 노선 전체가 딱 예쁘게 보입니다.
-  const centerPos = [36.3504, 127.3845]; 
+  const centerPos: [number, number] = [36.3504, 127.3845];
 
   const mapData = useMemo(() => {
     if (!stations || stations.length === 0) return { mainLoop: [], yeonchuk: [], jinjam: [] };
-    const findSt = (id) => stations.find(s => s.id === id);
-    const getCoords = (ids) => ids.map(id => {
+    const findSt = (id: number) => stations.find(s => s.id === id);
+    const getCoords = (ids: number[]): [number, number][] => ids.map(id => {
         const s = findSt(id);
-        return s ? [s.lat, s.lon] : null;
-    }).filter(c => c !== null);
+        return s ? ([s.lat, s.lon] as [number, number]) : null;
+    }).filter((c): c is [number, number] => c !== null);
 
     const mainLoopIds = Array.from({length: 40}, (_, i) => 201 + i).concat([201]);
     const yeonchukIds = [212, 241, 242, 243, 244];
@@ -57,28 +93,28 @@ const TramMap = ({ stations = [], accidents = [], complaints = [], onMarkerClick
     };
   }, [stations]);
 
-  const accidentPaths = useMemo(() => {
-    if (!accidents || accidents.length === 0 || !stations.length) return []; 
+  const accidentPaths = useMemo((): [number, number][][] => {
+    if (!accidents || accidents.length === 0 || !stations.length) return [];
     return accidents.map(acc => {
       const stIndex = stations.findIndex(s => s.id === acc.stationId);
       if (stIndex === -1) return null;
-      const nextSt = stations[(stIndex + 1) % stations.length]; 
+      const nextSt = stations[(stIndex + 1) % stations.length];
       const currentSt = stations[stIndex];
       if (!currentSt || !nextSt) return null;
-      return [[currentSt.lat, currentSt.lon], [nextSt.lat, nextSt.lon]];
-    }).filter(p => p !== null);
+      return [[currentSt.lat, currentSt.lon], [nextSt.lat, nextSt.lon]] as [number, number][];
+    }).filter((p): p is [number, number][] => p !== null);
   }, [accidents, stations]);
 
-  const getMarkerIcon = (stationId) => {
+  const getMarkerIcon = (stationId: number) => {
     const isAccident = accidents.find(a => a.stationId === stationId);
     const isComplaint = complaints.find(c => c.stationId === stationId && c.status !== 'done');
 
     let className = 'ai-marker status-normal';
-    let size = [16, 16];
+    let size: [number, number] = [16, 16];
 
     if (isAccident) {
-        className = 'ai-marker status-danger'; 
-        size = [24, 24]; 
+        className = 'ai-marker status-danger';
+        size = [24, 24];
     } else if (isComplaint) {
         className = 'ai-marker status-warning';
     }
@@ -98,9 +134,9 @@ const TramMap = ({ stations = [], accidents = [], complaints = [], onMarkerClick
     <div className="w-full h-full bg-slate-50 z-0">
       <style>{markerStyle}</style>
       <MapContainer center={centerPos} zoom={11.4} zoomSnap={0.1} zoomControl={false} style={{ height: '100%', width: '100%' }}>
-        <TileLayer 
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
-          attribution='&copy; Tram ON' 
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; Tram ON'
         />
         <Polyline positions={mapData.mainLoop} pathOptions={{ color: '#2563eb', weight: 5, opacity: 0.6 }} />
         <Polyline positions={mapData.yeonchuk} pathOptions={{ color: '#2563eb', weight: 5, opacity: 0.6 }} />
@@ -113,9 +149,9 @@ const TramMap = ({ stations = [], accidents = [], complaints = [], onMarkerClick
         {stations.map((st) => {
           const isAccident = accidents.find(a => a.stationId === st.id);
           return (
-            <Marker 
-              key={st.id} 
-              position={[st.lat, st.lon]} 
+            <Marker
+              key={st.id}
+              position={[st.lat, st.lon]}
               icon={getMarkerIcon(st.id)}
               eventHandlers={{ click: () => onMarkerClick(st) }}
             >

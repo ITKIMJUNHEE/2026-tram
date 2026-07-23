@@ -12,6 +12,9 @@ node_modules/
 frontend/build
 backend/dist
 
+# 학습 스크립트로 재생성 가능한 중간 산출물 (model.pkl은 Docker 빌드에 필요해 커밋 대상)
+ml-service/train/data/*.csv
+
 # misc
 .DS_Store
 .env

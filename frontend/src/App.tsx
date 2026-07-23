@@ -17,8 +17,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* ⭐ [핵심 변경] 
-         라우터와 상관없이 showSplash가 true면 
+      {/* ⭐ [핵심 변경]
+         라우터와 상관없이 showSplash가 true면
          무조건 화면 맨 위에 덮어씌웁니다.
       */}
       {showSplash && (

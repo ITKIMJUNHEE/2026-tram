@@ -2,31 +2,34 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, AlertTriangle, History, Sun, CloudRain, Snowflake, Calculator, BadgeCheck, Lightbulb, X, BarChart3, List, CheckCircle, TrendingUp, AlertCircle, Wind, Leaf, Car } from 'lucide-react';
 import './TramSimulation.css';
-import DecisionLog from './DecisionLog';
+import DecisionLog, { DecisionLogEntry } from './DecisionLog';
 import { getSimulateDefaults, runSimulate, runSimulateAlternative, getLogs, createLog, getScenarios, saveScenario } from '../api/client';
+import { PolicyInputs, PolicySimulationResult, PolicyJudgement, WeatherCondition, AlternativeScenario, SimulationLogDto, SavedScenarioDto } from '../types/api';
 
-const EMPTY_RESULTS = {
-  totalBudget: 0, deltaBudget: 0, congestionPercent: 0, complaintScore: 0,
+const EMPTY_RESULTS: PolicySimulationResult = {
+  totalBudget: 0, deltaBudget: 0, budgetChangePercent: 0, congestionPercent: 0, complaintScore: 0,
   tramRunsPerDay: 0, tramCostYear: 0, busCostYear: 0, co2Reduction: 0, pineTrees: 0, carReduction: 0,
   congestionInfo: { text: '로딩 중', tagClass: 'tag-info', color: '#94a3b8' },
   complaintInfo: { text: '로딩 중', class1: 'tag-info', tag1: '로딩' },
   budgetTag: { text: '로딩 중', class: 'tag-info' },
   strategyProposal: { title: '로딩 중', actionItems: [], tone: 'neutral' },
-  headwayWeekend: 0, headwayPeak: 0, effectiveHeadway: 0
+  headwayWeekend: 0, headwayPeak: 0, effectiveHeadway: 0, speedFactor: 1
 };
 
-const EMPTY_JUDGEMENT = { status: '분석 중...', comment: '서버에서 시뮬레이션 결과를 계산하고 있습니다.', isRecommended: false };
+const EMPTY_JUDGEMENT: PolicyJudgement = { status: '분석 중...', comment: '서버에서 시뮬레이션 결과를 계산하고 있습니다.', color: 'yellow', isRecommended: false };
+
+type AlternativeSuggestion = AlternativeScenario | string | null;
 
 const TramSimulation = () => {
   const navigate = useNavigate();
 
-  const [activeModal, setActiveModal] = useState(null);
-  const [decisionLogs, setDecisionLogs] = useState([]);
-  const [savedScenarios, setSavedScenarios] = useState([]);
-  const [alternativeSuggestion, setAlternativeSuggestion] = useState(null);
+  const [activeModal, setActiveModal] = useState<'ai' | 'history' | null>(null);
+  const [decisionLogs, setDecisionLogs] = useState<SimulationLogDto[]>([]);
+  const [savedScenarios, setSavedScenarios] = useState<SavedScenarioDto[]>([]);
+  const [alternativeSuggestion, setAlternativeSuggestion] = useState<AlternativeSuggestion>(null);
   const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<PolicyInputs>({
     tramHeadway: 6,
     busCut: 20,
     passengerPeak: 2500,
@@ -35,9 +38,9 @@ const TramSimulation = () => {
     operationHours: 18
   });
 
-  const [weather, setWeather] = useState({ type: 'sunny', intensity: 0 });
-  const [results, setResults] = useState(EMPTY_RESULTS);
-  const [judgement, setJudgement] = useState(EMPTY_JUDGEMENT);
+  const [weather, setWeather] = useState<WeatherCondition>({ type: 'sunny', intensity: 0 });
+  const [results, setResults] = useState<PolicySimulationResult>(EMPTY_RESULTS);
+  const [judgement, setJudgement] = useState<PolicyJudgement>(EMPTY_JUDGEMENT);
 
   // 초기 기본값 로딩 (버스 예산 등은 서버가 실데이터 CSV 기준으로 계산)
   useEffect(() => {
@@ -76,13 +79,13 @@ const TramSimulation = () => {
     return () => { cancelled = true; };
   }, [inputs, weather, defaultsLoaded]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setInputs((prev) => ({ ...prev, [name]: Number(value) }));
     setAlternativeSuggestion(null);
   };
 
-  const handleWeatherChange = (type) => {
+  const handleWeatherChange = (type: WeatherCondition['type']) => {
     setWeather({ type, intensity: type === 'sunny' ? 0 : 50 });
     if (type === 'rain') {
       setInputs((prev) => ({ ...prev, tramHeadway: 8, busCut: 25 }));
@@ -98,8 +101,8 @@ const TramSimulation = () => {
       .catch(() => alert('시나리오 저장에 실패했습니다.'));
   };
 
-  const formatWon = (num) => Math.round(num).toLocaleString('ko-KR') + '원';
-  const formatPercent = (num) => num.toFixed(1) + '%';
+  const formatWon = (num: number) => Math.round(num).toLocaleString('ko-KR') + '원';
+  const formatPercent = (num: number) => num.toFixed(1) + '%';
 
   const handleAcceptPolicy = () => {
     const budgetChangePercent = (results.deltaBudget / inputs.baseBusCostYear) * 100;
@@ -136,6 +139,15 @@ const TramSimulation = () => {
       })
       .catch(() => setAlternativeSuggestion('대안 탐색에 실패했습니다.'));
   };
+
+  const decisionLogEntries: DecisionLogEntry[] = decisionLogs.map((log) => ({
+    id: log.id,
+    time: log.createdAt,
+    input: log.input,
+    results: log.results,
+    judgement: log.judgementStatus,
+    reportSummary: log.reportSummary
+  }));
 
   return (
     <div className="tram-simulation-container">
@@ -190,7 +202,7 @@ const TramSimulation = () => {
           <div className="weather-section">
             <div className="label-line">🌤️ 기상 조건 설정</div>
             <div className="weather-buttons">
-              {['sunny', 'rain', 'snow'].map(type => (
+              {(['sunny', 'rain', 'snow'] as const).map(type => (
                 <button
                     key={type}
                     onClick={() => handleWeatherChange(type)}
@@ -444,14 +456,7 @@ const TramSimulation = () => {
                 </div>
 
                 {/* 서버에 저장된 결정 로그 */}
-                <DecisionLog logs={decisionLogs.map((log) => ({
-                  id: log.id,
-                  time: log.createdAt,
-                  input: log.input,
-                  results: log.results,
-                  judgement: log.judgementStatus,
-                  reportSummary: log.reportSummary
-                }))} />
+                <DecisionLog logs={decisionLogEntries} />
 
                 {/* 저장된 시나리오 (서버 영속화) */}
                 {savedScenarios.length > 0 && (

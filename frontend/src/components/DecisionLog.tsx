@@ -1,7 +1,20 @@
 import React from 'react';
 import { History, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
-const DecisionLog = ({ logs }) => {
+export interface DecisionLogEntry {
+  id: number;
+  time: string;
+  input: string;
+  results: string;
+  judgement: string;
+  reportSummary: string;
+}
+
+interface DecisionLogProps {
+  logs: DecisionLogEntry[];
+}
+
+const DecisionLog = ({ logs }: DecisionLogProps) => {
     if (!logs || logs.length === 0) {
         return (
             <div className="history-section" style={{ marginTop: '25px', padding: '15px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9', textAlign: 'center' }}>
@@ -13,7 +26,7 @@ const DecisionLog = ({ logs }) => {
         );
     }
 
-    const getIcon = (status) => {
+    const getIcon = (status: string) => {
         if (status.includes('🟢')) return <CheckCircle size={16} color="#22c55e" />;
         if (status.includes('🟡')) return <AlertTriangle size={16} color="#fbbf24" />;
         if (status.includes('🔴')) return <XCircle size={16} color="#ef4444" />;
@@ -27,10 +40,10 @@ const DecisionLog = ({ logs }) => {
             </div>
             <div className="scenario-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {logs.map((log) => (
-                    <div key={log.id} style={{ 
-                        border: '1px solid #f1f5f9', 
-                        padding: '12px', 
-                        borderRadius: '6px', 
+                    <div key={log.id} style={{
+                        border: '1px solid #f1f5f9',
+                        padding: '12px',
+                        borderRadius: '6px',
                         backgroundColor: '#f8fafc',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                     }}>
