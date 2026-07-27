@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: ghcr.io/itkimjunhee/2026-tram-client:sha-1ec7053
+          image: ghcr.io/itkimjunhee/2026-tram-client:sha-c6119b6
           ports:
             - containerPort: 80
           readinessProbe:
