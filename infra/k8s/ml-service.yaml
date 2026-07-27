@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ml-service
-          image: ghcr.io/itkimjunhee/2026-tram-ml-service:sha-c3e5f09
+          image: ghcr.io/itkimjunhee/2026-tram-ml-service:sha-1ec7053
           ports:
             - containerPort: 8000
           resources:
