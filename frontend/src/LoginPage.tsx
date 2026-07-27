@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
 import './LoginPage.css'; // 스타일 파일
+import { login, setAuthToken } from './api/client';
 
 interface Credentials {
   id: string;
@@ -17,14 +18,15 @@ const LoginPage = () => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 간단한 로그인 로직 (실제로는 서버 인증 필요)
-    // 여기서는 ID에 'admin'만 입력하면 통과되게 설정 (테스트용)
-    if (credentials.id === 'admin') {
+    setError('');
+    try {
+      const { token } = await login(credentials.id, credentials.password);
+      setAuthToken(token);
       navigate('/dashboard'); // 메인 대시보드로 이동
-    } else {
-      setError('접근 권한이 없는 계정입니다. 관리자에게 문의하세요.');
+    } catch {
+      setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }
   };
 

@@ -253,3 +253,31 @@ export interface MlPredictResponse {
   predicted_passengers: number;
   source?: 'rule-based-fallback';
 }
+
+/* -------------------------------------------------------------------------- */
+/* 인증 (admins)                                                              */
+/* -------------------------------------------------------------------------- */
+
+/** admins 테이블 로우 (schema.sql 기준) */
+export interface AdminRow {
+  id: number;
+  username: string;
+  password_hash: string;
+  created_at: Date;
+}
+
+export interface LoginRequestBody {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  username: string;
+}
+
+/** JWT payload. 발급(auth.ts)과 검증(middleware/auth.ts) 양쪽에서 공유한다. */
+export interface AuthTokenPayload {
+  username: string;
+  role: 'admin';
+}

@@ -18,6 +18,11 @@ spec:
           image: ghcr.io/itkimjunhee/2026-tram-server:sha-c3e5f09
           ports:
             - containerPort: 4000
+          # JWT_SECRET, ADMIN_INITIAL_PASSWORD는 이 Secret에서 온다. Secret 자체는
+          # git에 커밋하지 않고 클러스터에 직접 생성한다 (infra/k8s/README.md 참고).
+          envFrom:
+            - secretRef:
+                name: server-secrets
           env:
             # k8s Service 이름(postgres)이 호스트명이 된다.
             - name: DATABASE_URL

@@ -222,3 +222,17 @@ export interface WeatherApiResponse {
   desc: string;
   icon: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/* 인증 (auth)                                                                */
+/* -------------------------------------------------------------------------- */
+
+export interface LoginRequestBody {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  username: string;
+}

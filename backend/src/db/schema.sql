@@ -28,3 +28,10 @@ CREATE TABLE IF NOT EXISTS saved_scenarios (
   results_json JSONB NOT NULL,
   weather_json JSONB NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS admins (
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

@@ -25,6 +25,8 @@ infra/
 └── terraform/    (예정) EC2 인프라 코드화
 ```
 
+Secret(JWT_SECRET, ADMIN_INITIAL_PASSWORD 등) 생성 방법은 [infra/k8s/README.md](k8s/README.md) 참고.
+
 `infra/k8s`는 ArgoCD `tram-app`이 `prune: true`로 자동 관리하는 경로이고,
 `infra/argocd`·`infra/monitoring`은 각각 ArgoCD 자신과 모니터링 스택처럼
 **애플리케이션과 라이프사이클이 다른 인프라**라서 의도적으로 감시 대상 밖에 두고

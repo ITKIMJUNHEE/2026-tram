@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
+import bcrypt from 'bcrypt';
 import { pool, ensureSchema } from './connection';
 import { StationRow } from '../types';
+
+const BCRYPT_SALT_ROUNDS = 10;
+const ADMIN_USERNAME = 'admin';
 
 const CSV_PATH = path.join(__dirname, '..', 'data', 'tram_stations.csv');
 const META_PATH = path.join(__dirname, '..', 'data', 'stationMeta.json');
@@ -92,9 +96,31 @@ async function seedStations(): Promise<void> {
   console.log(`[seed] ${merged.length}개 정거장 데이터 시딩 완료`);
 }
 
+async function seedAdmin(): Promise<void> {
+  const { rows } = await pool.query('SELECT id FROM admins WHERE username = $1', [ADMIN_USERNAME]);
+  if (rows.length > 0) {
+    console.log('[seed] admin 계정이 이미 존재합니다. 건너뜁니다.');
+    return;
+  }
+
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD;
+  if (!initialPassword) {
+    console.warn('[seed] ADMIN_INITIAL_PASSWORD가 설정되지 않아 admin 계정 생성을 건너뜁니다.');
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(initialPassword, BCRYPT_SALT_ROUNDS);
+  await pool.query(
+    'INSERT INTO admins (username, password_hash) VALUES ($1, $2)',
+    [ADMIN_USERNAME, passwordHash]
+  );
+  console.log(`[seed] admin 계정(${ADMIN_USERNAME}) 생성 완료`);
+}
+
 async function main(): Promise<void> {
   await ensureSchema();
   await seedStations();
+  await seedAdmin();
   await pool.end();
 }
 
