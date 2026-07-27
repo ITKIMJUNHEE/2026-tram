@@ -232,10 +232,16 @@ export interface PredictRequestBody {
   month?: number;
 }
 
+/** GET /api/weather 응답. OpenWeatherMap Current Weather Data API를 대전
+ * 위경도(36.3504, 127.3845) 고정 좌표로 조회한 결과를 변환한 것. */
 export interface WeatherApiResponse {
   temp: number;
+  feelsLike: number;
+  humidity: number;
   desc: string;
   icon: string;
+  /** 최근 1시간 강수량(mm). OpenWeatherMap 응답에 rain.1h가 없으면(비가 안 옴) 생략됨. */
+  rain1h?: number;
 }
 
 /** POST /api/predict/ml 요청 바디. ml-service의 /predict 스키마와 동일하게 맞춘다. */

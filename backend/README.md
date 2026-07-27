@@ -15,7 +15,7 @@ Postgres 컨테이너가 먼저 떠 있어야 합니다 (저장소 루트 [READM
 
 ```bash
 cd backend
-cp .env.example .env   # DATABASE_URL, PORT, OPENWEATHER_API_KEY(선택) 설정
+cp .env.example .env   # DATABASE_URL, PORT, WEATHER_API_KEY(선택) 설정
 npm install
 npm run seed            # 정거장 데이터 최초 시딩 (최초 1회, 또는 데이터 갱신 시)
 npm run dev              # http://localhost:4000, --watch로 코드 변경 시 자동 재시작

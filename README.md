@@ -68,7 +68,7 @@ npm run dev             # backend(:4000) + frontend(:3000) 동시 실행
 
 브라우저에서 http://localhost:3000 접속 (로그인 ID: `admin`).
 
-날씨 표시 기능(선택)은 `backend/.env`에 `OPENWEATHER_API_KEY`를 넣으면 실데이터로 동작하고,
+날씨 표시 기능(선택)은 `backend/.env`에 `WEATHER_API_KEY`를 넣으면 실데이터로 동작하고,
 키가 없으면 안전 기본값(4°C, 흐림)으로 대체됩니다. `backend/.env.example` 참고.
 
 ### 개별 실행

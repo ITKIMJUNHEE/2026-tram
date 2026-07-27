@@ -219,8 +219,11 @@ export interface CreateSavedScenarioBody {
 
 export interface WeatherApiResponse {
   temp: number;
+  feelsLike: number;
+  humidity: number;
   desc: string;
   icon: string;
+  rain1h?: number;
 }
 
 /* -------------------------------------------------------------------------- */
