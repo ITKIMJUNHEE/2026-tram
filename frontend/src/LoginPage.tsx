@@ -24,7 +24,7 @@ const LoginPage = () => {
     try {
       const { token } = await login(credentials.id, credentials.password);
       setAuthToken(token);
-      navigate('/dashboard'); // 메인 대시보드로 이동
+      navigate('/admin'); // 관리자 대시보드로 이동
     } catch {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }

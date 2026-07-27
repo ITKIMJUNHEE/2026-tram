@@ -10,6 +10,7 @@ import logsRouter from './routes/logs';
 import scenariosRouter from './routes/scenarios';
 import weatherRouter from './routes/weather';
 import authRouter from './routes/auth';
+import adminRouter from './routes/admin';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -32,6 +33,7 @@ app.use('/api/logs', logsRouter);
 app.use('/api/scenarios', scenariosRouter);
 app.use('/api/weather', weatherRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
 
 async function main(): Promise<void> {
   await ensureSchema();

@@ -13,8 +13,22 @@ import {
   WeatherApiResponse,
   PolicyInputs,
   WeatherCondition,
-  LoginResponse
+  LoginResponse,
+  AdminOverviewResponse,
+  AdminLinksResponse,
+  MlModelInfoResponse,
+  PaginatedResponse
 } from '../types/api';
+
+// 응답 상태 코드를 들고 있어서, 호출부에서 401(세션 만료)만 골라 로그인 페이지로
+// 리다이렉트하는 등 상태별로 다르게 처리할 수 있게 한다.
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
 
 const AUTH_TOKEN_STORAGE_KEY = 'authToken';
 
@@ -43,7 +57,7 @@ const request = async <T>(path: string, options: RequestInit = {}): Promise<T> =
   });
   if (!response.ok) {
     const text = await response.text().catch(() => '');
-    throw new Error(`API 요청 실패 (${response.status}): ${text}`);
+    throw new ApiError(response.status, `API 요청 실패 (${response.status}): ${text}`);
   }
   return response.json();
 };
@@ -77,3 +91,15 @@ export const getWeather = (): Promise<WeatherApiResponse> => request('/weather')
 
 export const login = (username: string, password: string): Promise<LoginResponse> =>
   request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+
+export const getAdminOverview = (): Promise<AdminOverviewResponse> => request('/admin/overview');
+
+export const getAdminLogs = (limit: number, offset: number): Promise<PaginatedResponse<SimulationLogDto>> =>
+  request(`/admin/logs?limit=${limit}&offset=${offset}`);
+
+export const getAdminScenarios = (limit: number, offset: number): Promise<PaginatedResponse<SavedScenarioDto>> =>
+  request(`/admin/scenarios?limit=${limit}&offset=${offset}`);
+
+export const getAdminLinks = (): Promise<AdminLinksResponse> => request('/admin/links');
+
+export const getMlModelInfo = (): Promise<MlModelInfoResponse> => request('/admin/ml-model-info');

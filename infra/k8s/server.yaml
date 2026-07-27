@@ -32,6 +32,11 @@ spec:
             # k8s Service 이름(ml-service)이 호스트명이 된다.
             - name: ML_SERVICE_URL
               value: "http://ml-service:8000"
+            # 관리자 대시보드의 인프라 도구 링크 (GET /api/admin/links)
+            - name: ARGOCD_URL
+              value: "https://argocd.oasis-tram.duckdns.org"
+            - name: GRAFANA_URL
+              value: "https://grafana.oasis-tram.duckdns.org"
           readinessProbe:
             httpGet:
               path: /api/health

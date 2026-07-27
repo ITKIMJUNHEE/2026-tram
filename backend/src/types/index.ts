@@ -281,3 +281,37 @@ export interface AuthTokenPayload {
   username: string;
   role: 'admin';
 }
+
+/* -------------------------------------------------------------------------- */
+/* 관리자 대시보드 (routes/admin.ts, requireAuth로 보호됨)                     */
+/* -------------------------------------------------------------------------- */
+
+export interface AdminOverviewResponse {
+  stationCount: number;
+  simulationLogCount: number;
+  savedScenarioCount: number;
+  dbStatus: 'connected' | 'error';
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AdminLinksResponse {
+  argocdUrl: string;
+  grafanaUrl: string;
+}
+
+/** ml-service GET /model-info 응답과 동일한 구조 (그대로 프록시). */
+export interface MlModelInfoResponse {
+  trained_at: string;
+  mae: number;
+  r2: number;
+  training_rows: number;
+  synthetic_rows: number;
+  real_rows: number;
+  model_type: string;
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import MainDashboard from './MainDashboard';
+import AdminDashboard from './AdminDashboard';
 import TramSimulation from './components/TramSimulation';
 import TramPredictionMap from './components/TramPredictionMap';
 import SplashScreen from './components/SplashScreen';
@@ -28,6 +29,7 @@ function App() {
       {/* 뒤에는 앱 화면들이 미리 로딩되어 있음 */}
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/dashboard" element={<MainDashboard />} />
         <Route path="/simulation" element={<TramSimulation />} />
         <Route path="/prediction" element={<TramPredictionMap />} />
