@@ -10,8 +10,8 @@
 | Ingress / 라우팅 | **Traefik** (k3s 기본 포함), 도메인은 DuckDNS(`oasis-tram.duckdns.org`) |
 | TLS 인증서 | **cert-manager** + Let's Encrypt `ClusterIssuer`(`letsencrypt-prod`) |
 | GitOps 배포 | **ArgoCD** — `infra/argocd/argocd-application.yaml`(`tram-app`)이 `infra/k8s`를 감시, 자동 동기화(`prune`+`selfHeal`) |
-| CI/CD | **GitHub Actions** — 이미지 빌드 → GHCR 푸시 → 매니페스트 자동 커밋 |
-| 이미지 레지스트리 | **GHCR** (ghcr.io/itkimjunhee/2026-tram-server, -client) |
+| CI/CD | **GitHub Actions** — matrix 빌드(server/client/ml-service) → GHCR 푸시 → 매니페스트 자동 커밋 |
+| 이미지 레지스트리 | **GHCR** (ghcr.io/itkimjunhee/2026-tram-server, -client, -ml-service) |
 | 모니터링 | **Prometheus + Grafana** (`kube-prometheus-stack` Helm 차트, namespace: `monitoring`) |
 | 향후 계획 | **Terraform**으로 EC2/보안그룹/EIP 코드화 (`infra/terraform`, 아직 미구현) |
 
@@ -93,3 +93,10 @@ EC2 인스턴스가 재부팅되면 k3s가 `/etc/rancher/k3s/k3s.yaml`을 root �
 재생성해서, 일반 사용자의 `kubectl` 명령이 permission denied로 실패하는 경우가
 있었습니다. 재부팅 후에는 kubeconfig 권한(또는 `KUBECONFIG` 환경변수 지정)을
 다시 확인해야 합니다.
+
+### 6. VS Code 내장 Git의 자격 증명 소켓 충돌로 push 실패
+VS Code(원격 개발 환경)의 내장 Git 확장이 자격 증명 관리를 위해 로컬 소켓을 점유하고
+있으면, 터미널에서의 `git push`가 그 소켓 연결 오류로 실패하는 경우가 있었습니다.
+이 경우 GitHub Personal Access Token을 `https://x-access-token:<PAT>@github.com/...`
+형태로 push 대상 URL에 직접 넣어(일회성으로, `git remote set-url`처럼 영구 저장하지
+않고) 우회했습니다. `.git/config`에 토큰이 남지 않도록 매번 확인이 필요합니다.
