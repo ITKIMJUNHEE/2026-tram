@@ -6,6 +6,7 @@ import AdminDashboard from './AdminDashboard';
 import TramSimulation from './components/TramSimulation';
 import TramPredictionMap from './components/TramPredictionMap';
 import SplashScreen from './components/SplashScreen';
+import RequireAuth from './components/RequireAuth';
 
 function App() {
   // 스플래시 화면 상태 (처음엔 무조건 true)
@@ -31,8 +32,8 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/dashboard" element={<MainDashboard />} />
-        <Route path="/simulation" element={<TramSimulation />} />
-        <Route path="/prediction" element={<TramPredictionMap />} />
+        <Route path="/simulation" element={<RequireAuth><TramSimulation /></RequireAuth>} />
+        <Route path="/prediction" element={<RequireAuth><TramPredictionMap /></RequireAuth>} />
       </Routes>
     </BrowserRouter>
   );

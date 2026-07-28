@@ -1,8 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { pool } from '../db/connection';
+import { requireAuth } from '../middleware/auth';
 import { SavedScenarioRow, SavedScenarioDto, CreateSavedScenarioBody } from '../types';
 
 const router = express.Router();
+
+// 저장된 시나리오는 관제 담당자만 조회/저장할 수 있다 (시민 공개 대상 아님).
+router.use(requireAuth);
 
 const toScenarioDto = (row: SavedScenarioRow): SavedScenarioDto => ({
   id: row.id,

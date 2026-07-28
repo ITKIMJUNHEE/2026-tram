@@ -47,6 +47,20 @@ export const setAuthToken = (token: string | null): void => {
 
 export const getAuthToken = (): string | null => authToken;
 
+// 서버까지 왕복하지 않고 JWT의 exp 클레임만 디코딩해서 만료 여부를 판단한다
+// (서명 검증은 어차피 서버가 매 요청마다 하므로, 여기서는 라우트 가드용 힌트로만 쓴다).
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const json = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+    const payload = JSON.parse(json) as { exp?: number };
+    if (!payload.exp) return true;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+};
+
 // 관리자 API 호출 시 재사용할 Authorization 헤더 유틸.
 const authHeaders = (): Record<string, string> => (authToken ? { Authorization: `Bearer ${authToken}` } : {});
 

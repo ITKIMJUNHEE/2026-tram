@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { runPolicySimulation, judgePolicy, findAlternative } from '../engine/policyEngine';
+import { requireAuth } from '../middleware/auth';
 import { PolicyInputs, SimulateRequestBody } from '../types';
 
 const router = express.Router();
@@ -25,11 +26,12 @@ const DEFAULT_INPUTS: Omit<PolicyInputs, 'baseBusCostYear'> = {
   operationHours: 18
 };
 
-router.get('/defaults', (req: Request, res: Response) => {
+router.get('/defaults', requireAuth, (req: Request, res: Response) => {
   res.json({ ...DEFAULT_INPUTS, baseBusCostYear: getBaseBusCostYear() });
 });
 
-router.post('/', (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
+// 정책 시뮬레이션 실행은 관제 담당자만 가능하다 (시민 공개 대상 아님).
+router.post('/', requireAuth, (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
   const { inputs, weather } = req.body || {};
   if (!inputs) return res.status(400).json({ error: 'inputs is required' });
 
@@ -38,7 +40,7 @@ router.post('/', (req: Request<unknown, unknown, SimulateRequestBody>, res: Resp
   res.json({ results, judgement });
 });
 
-router.post('/alternative', (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
+router.post('/alternative', requireAuth, (req: Request<unknown, unknown, SimulateRequestBody>, res: Response) => {
   const { inputs, weather } = req.body || {};
   if (!inputs) return res.status(400).json({ error: 'inputs is required' });
 

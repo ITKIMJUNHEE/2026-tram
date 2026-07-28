@@ -1,8 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { pool } from '../db/connection';
+import { requireAuth } from '../middleware/auth';
 import { SimulationLogRow, SimulationLogDto, CreateSimulationLogBody } from '../types';
 
 const router = express.Router();
+
+// 정책 결정 로그는 관제 담당자만 조회/기록할 수 있다 (시민 공개 대상 아님).
+router.use(requireAuth);
 
 const toLogDto = (row: SimulationLogRow): SimulationLogDto => ({
   id: row.id,

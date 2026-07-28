@@ -6,7 +6,7 @@ import {
   ArrowRight, Sun, CloudRain, Snowflake, LogOut, Siren,
   Map as MapIcon, Users, MessageSquare, CheckCircle, Phone, ShieldAlert,
   Wrench, Send, Cloud, Thermometer, Megaphone, Bus, Calendar, Clock,
-  Activity, Radio, Droplets, Leaf, Cpu, Gauge, X
+  Activity, Radio, Droplets, Leaf, Cpu, Gauge, X, Lock
 } from 'lucide-react';
 
 interface AccidentScenario {
@@ -254,11 +254,25 @@ const MainDashboard = () => {
             <button onClick={() => setShowBriefing(true)} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-green-200/50 transition-all hover:-translate-y-1">
                 <Megaphone size={18} /> AI 시민 안내
             </button>
-            <button onClick={() => navigate('/prediction')} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200/50 transition-all hover:-translate-y-1">
+            <button
+                onClick={() => navigate('/')}
+                title="관제 담당자 로그인이 필요한 기능입니다"
+                className="relative flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200/50 transition-all hover:-translate-y-1"
+            >
                 <MapIcon size={18} /> 미래 예측
+                <span className="absolute -top-2 -right-2 bg-slate-800 text-white text-[9px] font-bold pl-1 pr-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow whitespace-nowrap">
+                    <Lock size={9} /> 로그인 필요
+                </span>
             </button>
-            <button onClick={() => navigate('/simulation')} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-200/50 transition-all hover:-translate-y-1">
+            <button
+                onClick={() => navigate('/')}
+                title="관제 담당자 로그인이 필요한 기능입니다"
+                className="relative flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-200/50 transition-all hover:-translate-y-1"
+            >
                 상세 시뮬레이터 <ArrowRight size={18} />
+                <span className="absolute -top-2 -right-2 bg-slate-800 text-white text-[9px] font-bold pl-1 pr-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow whitespace-nowrap">
+                    <Lock size={9} /> 로그인 필요
+                </span>
             </button>
             <button onClick={() => navigate('/')} className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 px-5 py-3 rounded-xl font-bold shadow-md transition-all">
                 <LogOut size={18} />

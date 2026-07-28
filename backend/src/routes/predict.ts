@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { pool } from '../db/connection';
+import { requireAuth } from '../middleware/auth';
 import { runPredictionSimulation } from '../engine/predictionEngine';
 import { BusDataItem, PredictionStationInput, PredictRequestBody, StationRow, WeatherCondition, MlPredictRequestBody, MlPredictResponse } from '../types';
 
@@ -39,12 +40,13 @@ const getSeasonalWeather = (month: number): WeatherCondition => {
   return { type: 'sunny', intensity: 0 };
 };
 
-router.get('/bus-data/:month', (req: Request, res: Response) => {
+router.get('/bus-data/:month', requireAuth, (req: Request, res: Response) => {
   const month = Number(req.params.month);
   res.json(loadBusDataForMonth(month));
 });
 
-router.post('/', async (req: Request<unknown, unknown, PredictRequestBody>, res: Response, next: NextFunction) => {
+// 전체 정거장 예측(규칙기반/ML)은 관제 담당자만 가능하다 (시민 공개 대상 아님).
+router.post('/', requireAuth, async (req: Request<unknown, unknown, PredictRequestBody>, res: Response, next: NextFunction) => {
   try {
     const { tramInterval, busReduction, signalLevel, isAiMode, timeSlot, month } = req.body || {};
     if (!tramInterval || busReduction === undefined) {
@@ -81,7 +83,7 @@ const runFallbackPrediction = (body: Partial<MlPredictRequestBody>): number => {
   return result.stations[0]?.passengers ?? 0;
 };
 
-router.post('/ml', async (req: Request<unknown, unknown, MlPredictRequestBody>, res: Response) => {
+router.post('/ml', requireAuth, async (req: Request<unknown, unknown, MlPredictRequestBody>, res: Response) => {
   const body = req.body || ({} as MlPredictRequestBody);
   const mlServiceUrl = process.env.ML_SERVICE_URL;
 
