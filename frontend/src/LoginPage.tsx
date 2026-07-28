@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Location } from 'react-router-dom';
 import { Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
 import './LoginPage.css'; // 스타일 파일
 import { login, setAuthToken } from './api/client';
@@ -9,8 +9,13 @@ interface Credentials {
   password: string;
 }
 
+interface LocationState {
+  from?: Location;
+}
+
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [credentials, setCredentials] = useState<Credentials>({ id: '', password: '' });
   const [error, setError] = useState('');
 
@@ -24,7 +29,10 @@ const LoginPage = () => {
     try {
       const { token } = await login(credentials.id, credentials.password);
       setAuthToken(token);
-      navigate('/admin'); // 관리자 대시보드로 이동
+      // 인증이 필요해 로그인 페이지로 리다이렉트됐던 경우 원래 가려던 경로로,
+      // 로그인 페이지에 직접 들어온 경우 기존대로 관리자 대시보드로 이동
+      const from = (location.state as LocationState | null)?.from;
+      navigate(from ? `${from.pathname}${from.search}` : '/admin', { replace: true });
     } catch {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }

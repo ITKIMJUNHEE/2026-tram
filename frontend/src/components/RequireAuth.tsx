@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { getAuthToken, isTokenExpired, setAuthToken } from '../api/client';
 
 interface RequireAuthProps {
@@ -12,10 +12,11 @@ interface RequireAuthProps {
  */
 const RequireAuth = ({ children }: RequireAuthProps) => {
   const token = getAuthToken();
+  const location = useLocation();
 
   if (!token || isTokenExpired(token)) {
     setAuthToken(null);
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return children;
