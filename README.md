@@ -62,7 +62,7 @@ JWT 인증 관제 시스템·ML 수요 예측·GitOps 자동 배포·모니터�
 
 ## 아키텍처
 
-![시스템 아키텍처](docs/diagrams/system-architecture.png)
+<img src="docs/diagrams/system-architecture.png" width="900" alt="시스템 아키텍처">
 
 EC2 인스턴스 한 대 위에 k3s 단일 노드 클러스터를 올려 실제 트래픽 규모에 맞는
 비용 효율적인 구조로 운영합니다. Traefik이 도메인 하나로 프론트엔드/백엔드
@@ -85,7 +85,7 @@ flowchart LR
 
 ### 배포 파이프라인
 
-![배포 파이프라인](docs/diagrams/cicd-pipeline.png)
+<img src="docs/diagrams/cicd-pipeline.png" width="900" alt="배포 파이프라인">
 
 `git push` 한 번이면 GitHub Actions가 빌드·테스트 후 이미지를 GHCR에 올리고
 ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영합니다(GitOps). 수동 SSH 배포

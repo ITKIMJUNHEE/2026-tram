@@ -33,7 +33,7 @@ GRAPH_ATTR = {
     "bgcolor": "white",
     "pad": "0.6",
     "nodesep": "0.6",
-    "ranksep": "0.9",
+    "ranksep": "0.7",
     "splines": "ortho",
 }
 NODE_ATTR = {"fontname": FONT, "fontsize": "13"}
@@ -44,7 +44,7 @@ def system_architecture() -> None:
     with Diagram(
         "트램 ON — 시스템 아키텍처 (EC2 단일 인스턴스 · ap-northeast-2 · 단일 AZ)",
         filename="docs/diagrams/system-architecture",
-        direction="TB",
+        direction="LR",
         show=False,
         graph_attr=GRAPH_ATTR,
         node_attr=NODE_ATTR,

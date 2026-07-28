@@ -2,7 +2,7 @@
 
 ## 전체 구조
 
-![시스템 아키텍처](diagrams/system-architecture.png)
+<img src="diagrams/system-architecture.png" width="900" alt="시스템 아키텍처">
 
 단일 EC2 인스턴스 위에서 k3s 하나로 프론트엔드/백엔드/DB/모니터링까지 전부
 운영합니다. 지금 트래픽 규모에서는 멀티 노드·멀티 AZ가 필요하지 않다고 판단해
@@ -60,7 +60,7 @@ flowchart TB
 
 ## 배포 파이프라인
 
-![배포 파이프라인](diagrams/cicd-pipeline.png)
+<img src="diagrams/cicd-pipeline.png" width="900" alt="배포 파이프라인">
 
 코드 push부터 실제 반영까지 사람이 수동으로 개입하는 지점이 없습니다 —
 GitHub Actions가 빌드·테스트·이미지 푸시를 하고 ArgoCD가 그 변경을 감지해
