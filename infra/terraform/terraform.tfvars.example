@@ -1,0 +1,15 @@
+# 이 파일을 terraform.tfvars로 복사한 뒤 실제 값을 채우세요.
+# terraform.tfvars(실제 값이 든 파일)는 .gitignore에 의해 git에 커밋되지 않습니다.
+#
+#   cp terraform.tfvars.example terraform.tfvars
+
+# 필수 — 반드시 본인의 실제 공인 IP로 교체하세요 (확인: curl ifconfig.me)
+allowed_ssh_cidr = "203.0.113.10/32"
+
+# 아래 값들은 실제 운영 인스턴스에서 이미 확인해 variables.tf 기본값으로 넣어뒀습니다.
+# 다른 환경에 새로 만들 게 아니라면 보통 건드릴 필요 없습니다.
+# instance_type = "m7i-flex.large"
+# ami_id        = "ami-0bc151a94289adb52"
+# key_name      = "tram-key"
+# vpc_id        = "vpc-02f0c70bd0cf662c6"
+# subnet_id     = "subnet-047a1aaabccc3a13d"
