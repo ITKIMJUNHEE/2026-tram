@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/itkimjunhee/2026-tram-server:sha-41397a9
+          image: ghcr.io/itkimjunhee/2026-tram-server:sha-7b05809
           ports:
             - containerPort: 4000
           # JWT_SECRET, ADMIN_INITIAL_PASSWORD는 이 Secret에서 온다. Secret 자체는
