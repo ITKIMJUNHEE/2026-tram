@@ -62,6 +62,13 @@ JWT 인증 관제 시스템·ML 수요 예측·GitOps 자동 배포·모니터�
 
 ## 아키텍처
 
+![시스템 아키텍처](docs/diagrams/system-architecture.png)
+
+EC2 인스턴스 한 대 위에 k3s 단일 노드 클러스터를 올려 실제 트래픽 규모에 맞는
+비용 효율적인 구조로 운영합니다. Traefik이 도메인 하나로 프론트엔드/백엔드
+라우팅을 모두 처리하고, ML 서비스는 백엔드와 분리된 프로세스로 두어 장애가
+나도 규칙 기반 폴백으로 서비스가 끊기지 않게 했습니다.
+
 ```mermaid
 flowchart LR
     User((사용자)) -->|HTTPS| Traefik[Traefik Ingress]
@@ -76,8 +83,16 @@ flowchart LR
     Grafana -.조회.-> Prometheus
 ```
 
+### 배포 파이프라인
+
+![배포 파이프라인](docs/diagrams/cicd-pipeline.png)
+
+`git push` 한 번이면 GitHub Actions가 빌드·테스트 후 이미지를 GHCR에 올리고
+ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영합니다(GitOps). 수동 SSH 배포
+없이 git 커밋 이력이 곧 배포 이력이 되도록 만든 구조입니다.
+
 프론트엔드/백엔드/DB/ArgoCD/모니터링 전체 구조의 상세 다이어그램은
-[docs/architecture.md](docs/architecture.md), 배포 파이프라인 다이어그램은
+[docs/architecture.md](docs/architecture.md), 배포 파이프라인의 트러블슈팅은
 [infra/README.md](infra/README.md#배포-흐름)에 있습니다.
 
 ## 기술 스택
