@@ -98,6 +98,19 @@ git 커밋 이력이 곧 배포 이력이 되는 구조.
 [docs/architecture.md](docs/architecture.md), 배포 파이프라인의 트러블슈팅은
 [infra/README.md](infra/README.md#배포-흐름) 참고.
 
+## 성능 테스트
+
+시민 대시보드 공개 API(`/api/health`, `/api/stations`, `/api/weather`)를 대상으로
+k6로 10→30→50→100→200명 단계적 부하테스트 진행. **100명까지는 p95 8ms 이내로
+안정적, 200명 구간부터 p95 119ms·p99 364ms로 지연이 급격히 증가**(에러율은
+200명까지도 0% 유지). 노드 CPU 사용률이 200명 구간에서 50~62%까지 오르는 것과
+맞물려, 이 지점이 지금 스펙(EC2 단일 인스턴스, 2vCPU)의 실질적 변곡점으로 확인됨.
+
+<img src="docs/loadtest/grafana-during-test.png" width="900" alt="부하테스트 중 Grafana 지표">
+
+상세 단계별 수치, 병목 원인 분석(CPU 포화 vs DB vs 메모리), 개선 아이디어는
+[scripts/loadtest/results.md](scripts/loadtest/results.md) 참고.
+
 ## 기술 스택
 
 | 계층 | 기술 |

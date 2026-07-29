@@ -1,0 +1,286 @@
+=== 테스트 시작 전 pod 상태 ===
+2026-07-29T10:21:14Z
+NAME                          READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+client-675fd84cb5-vm97x       1/1     Running   0          14m   10.42.0.183   ip-172-31-33-233   <none>           <none>
+ml-service-6c84998755-5dqpm   1/1     Running   0          14m   10.42.0.182   ip-172-31-33-233   <none>           <none>
+postgres-9675fdd7c-v2bmg      1/1     Running   0          44m   10.42.0.177   ip-172-31-33-233   <none>           <none>
+server-5dbbd9cf69-9fmwt       1/1     Running   0          14m   10.42.0.181   ip-172-31-33-233   <none>           <none>
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      13m          32Mi            
+server-5dbbd9cf69-9fmwt       18m          26Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   256m         12%      5392Mi          69%         
+===
+=== 2026-07-29T10:21:29Z (sample 1) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      11m          29Mi            
+server-5dbbd9cf69-9fmwt       18m          26Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   171m         8%       5399Mi          69%         
+=== 2026-07-29T10:21:45Z (sample 2) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      12m          30Mi            
+server-5dbbd9cf69-9fmwt       18m          31Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   271m         13%      5450Mi          70%         
+=== 2026-07-29T10:22:00Z (sample 3) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      13m          32Mi            
+server-5dbbd9cf69-9fmwt       18m          31Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   403m         20%      5478Mi          70%         
+=== 2026-07-29T10:22:15Z (sample 4) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      16m          33Mi            
+server-5dbbd9cf69-9fmwt       37m          38Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   288m         14%      5492Mi          70%         
+=== 2026-07-29T10:22:30Z (sample 5) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      14m          34Mi            
+server-5dbbd9cf69-9fmwt       34m          46Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   390m         19%      5585Mi          71%         
+=== 2026-07-29T10:22:46Z (sample 6) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      17m          34Mi            
+server-5dbbd9cf69-9fmwt       31m          54Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   449m         22%      5671Mi          72%         
+=== 2026-07-29T10:23:01Z (sample 7) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      16m          34Mi            
+server-5dbbd9cf69-9fmwt       29m          61Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   336m         16%      5676Mi          73%         
+=== 2026-07-29T10:23:17Z (sample 8) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      21m          34Mi            
+server-5dbbd9cf69-9fmwt       52m          63Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   449m         22%      5576Mi          71%         
+=== 2026-07-29T10:23:32Z (sample 9) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      20m          33Mi            
+server-5dbbd9cf69-9fmwt       62m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   429m         21%      5569Mi          71%         
+=== 2026-07-29T10:23:47Z (sample 10) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      21m          34Mi            
+server-5dbbd9cf69-9fmwt       61m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   390m         19%      5593Mi          71%         
+=== 2026-07-29T10:24:03Z (sample 11) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      24m          35Mi            
+server-5dbbd9cf69-9fmwt       59m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   440m         22%      5608Mi          72%         
+=== 2026-07-29T10:24:18Z (sample 12) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      21m          33Mi            
+server-5dbbd9cf69-9fmwt       63m          65Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   501m         25%      5613Mi          72%         
+=== 2026-07-29T10:24:34Z (sample 13) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      24m          37Mi            
+server-5dbbd9cf69-9fmwt       108m         45Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   540m         27%      5582Mi          71%         
+=== 2026-07-29T10:24:49Z (sample 14) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      25m          37Mi            
+server-5dbbd9cf69-9fmwt       109m         62Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   543m         27%      5602Mi          72%         
+=== 2026-07-29T10:25:04Z (sample 15) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      28m          36Mi            
+server-5dbbd9cf69-9fmwt       91m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   526m         26%      5608Mi          72%         
+=== 2026-07-29T10:25:19Z (sample 16) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      28m          37Mi            
+server-5dbbd9cf69-9fmwt       90m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   545m         27%      5640Mi          72%         
+=== 2026-07-29T10:25:35Z (sample 17) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      27m          35Mi            
+server-5dbbd9cf69-9fmwt       93m          64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   574m         28%      5611Mi          72%         
+=== 2026-07-29T10:25:50Z (sample 18) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      32m          35Mi            
+server-5dbbd9cf69-9fmwt       133m         64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   634m         31%      5627Mi          72%         
+=== 2026-07-29T10:26:06Z (sample 19) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      36m          37Mi            
+server-5dbbd9cf69-9fmwt       172m         65Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   781m         39%      5631Mi          72%         
+=== 2026-07-29T10:26:21Z (sample 20) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      41m          43Mi            
+server-5dbbd9cf69-9fmwt       176m         65Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   805m         40%      5648Mi          72%         
+=== 2026-07-29T10:26:37Z (sample 21) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      41m          43Mi            
+server-5dbbd9cf69-9fmwt       167m         65Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   784m         39%      5637Mi          72%         
+=== 2026-07-29T10:26:52Z (sample 22) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      39m          41Mi            
+server-5dbbd9cf69-9fmwt       168m         65Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   754m         37%      5570Mi          71%         
+=== 2026-07-29T10:27:08Z (sample 23) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      38m          45Mi            
+server-5dbbd9cf69-9fmwt       202m         64Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1000m        50%      5627Mi          72%         
+=== 2026-07-29T10:27:24Z (sample 24) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      53m          45Mi            
+server-5dbbd9cf69-9fmwt       287m         66Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1168m        58%      5666Mi          72%         
+=== 2026-07-29T10:27:39Z (sample 25) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      63m          45Mi            
+server-5dbbd9cf69-9fmwt       309m         66Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1257m        62%      5714Mi          73%         
+=== 2026-07-29T10:27:54Z (sample 26) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      58m          45Mi            
+server-5dbbd9cf69-9fmwt       302m         67Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1237m        61%      5714Mi          73%         
+=== 2026-07-29T10:28:10Z (sample 27) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      55m          46Mi            
+server-5dbbd9cf69-9fmwt       267m         69Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1549m        77%      6063Mi          77%         
+=== 2026-07-29T10:28:26Z (sample 28) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      56m          45Mi            
+server-5dbbd9cf69-9fmwt       267m         69Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   1211m        60%      5654Mi          72%         
+=== 2026-07-29T10:28:41Z (sample 29) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      38m          43Mi            
+server-5dbbd9cf69-9fmwt       231m         69Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   570m         28%      5518Mi          70%         
+=== 테스트 종료 후 pod 상태 ===
+2026-07-29T10:28:51Z
+NAME                          READY   STATUS    RESTARTS   AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+client-675fd84cb5-vm97x       1/1     Running   0          21m   10.42.0.183   ip-172-31-33-233   <none>           <none>
+ml-service-6c84998755-5dqpm   1/1     Running   0          21m   10.42.0.182   ip-172-31-33-233   <none>           <none>
+postgres-9675fdd7c-v2bmg      1/1     Running   0          51m   10.42.0.177   ip-172-31-33-233   <none>           <none>
+server-5dbbd9cf69-9fmwt       1/1     Running   0          21m   10.42.0.181   ip-172-31-33-233   <none>           <none>
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      11m          29Mi            
+server-5dbbd9cf69-9fmwt       27m          31Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   253m         12%      5502Mi          70%         
+===
+=== 2026-07-29T10:28:56Z (sample 30) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      11m          29Mi            
+server-5dbbd9cf69-9fmwt       27m          31Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   253m         12%      5502Mi          70%         
+=== 2026-07-29T10:29:11Z (sample 31) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      13m          29Mi            
+server-5dbbd9cf69-9fmwt       4m           30Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   234m         11%      5498Mi          70%         
+=== 2026-07-29T10:29:27Z (sample 32) ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+client-675fd84cb5-vm97x       1m           3Mi             
+ml-service-6c84998755-5dqpm   2m           168Mi           
+postgres-9675fdd7c-v2bmg      13m          29Mi            
+server-5dbbd9cf69-9fmwt       4m           30Mi            
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+ip-172-31-33-233   490m         24%      5498Mi          70%         

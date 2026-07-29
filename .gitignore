@@ -22,6 +22,10 @@ ml-service/train/data/*.csv
 *.tfvars
 !*.tfvars.example
 
+# k6 부하테스트 원본 산출물 (재실행으로 재생성 가능, raw-results.json은 수백 MB라 커밋 대상 아님)
+scripts/loadtest/raw-results.json
+scripts/loadtest/k6-stdout.log
+
 # misc
 .DS_Store
 .env
