@@ -106,7 +106,7 @@ ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영합니다(GitOps). �
 | Infra | Docker, Kubernetes (k3s), ArgoCD, Traefik, cert-manager, DuckDNS |
 | CI/CD | GitHub Actions, GHCR |
 | Monitoring | Prometheus, Grafana (kube-prometheus-stack) |
-| (예정) | Terraform (EC2/네트워크 코드화) |
+| IaC | Terraform — 코드 작성 및 검증(init/validate) 완료, 실제 리소스를 Terraform 관리로 가져오는 import는 리스크 관리 차원에서 별도 진행 예정 |
 
 ## 저장소 구조
 
@@ -119,7 +119,7 @@ ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영합니다(GitOps). �
 │   ├── k8s/            tram 네임스페이스 매니페스트 (ArgoCD 감시 대상)
 │   ├── argocd/         ArgoCD 자체 리소스
 │   ├── monitoring/     Grafana Ingress
-│   └── terraform/      (예정)
+│   └── terraform/      코드 작성/검증 완료, import는 별도 진행 예정
 ├── docs/
 │   ├── architecture.md
 │   ├── requirements.md
@@ -163,6 +163,7 @@ npm run dev   # backend(:4000) + frontend(:3000) 동시 실행
 | [ml-service/README.md](ml-service/README.md) | 모델 학습 파이프라인, 서빙 API |
 | [infra/README.md](infra/README.md) | 배포 흐름, 인프라 트러블슈팅 |
 | [infra/k8s/README.md](infra/k8s/README.md) | k8s Secret 관리 |
+| [infra/terraform/README.md](infra/terraform/README.md) | 기존 인프라 재현용 Terraform 코드 (아직 import 전) |
 
 ## 개발 히스토리 요약
 

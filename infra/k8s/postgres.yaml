@@ -35,9 +35,13 @@ spec:
           env:
             - name: POSTGRES_USER
               value: "tram"
-            # TODO: 나중에 Secret으로 옮길 것 (지금은 평문)
+            # 비밀번호는 git에 커밋하지 않고 클러스터에 직접 생성한 Secret에서
+            # 가져온다 (infra/k8s/README.md의 postgres-secrets 생성 참고).
             - name: POSTGRES_PASSWORD
-              value: "tram"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: "tram_db"
             - name: PGDATA

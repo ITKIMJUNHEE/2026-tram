@@ -13,7 +13,7 @@
 | CI/CD | **GitHub Actions** — matrix 빌드(server/client/ml-service) → GHCR 푸시 → 매니페스트 자동 커밋 |
 | 이미지 레지스트리 | **GHCR** (ghcr.io/itkimjunhee/2026-tram-server, -client, -ml-service) |
 | 모니터링 | **Prometheus + Grafana** (`kube-prometheus-stack` Helm 차트, namespace: `monitoring`) |
-| 향후 계획 | **Terraform**으로 EC2/보안그룹/EIP 코드화 (`infra/terraform`, 아직 미구현) |
+| IaC | **Terraform** — EC2/보안그룹/EIP 코드 작성 및 검증(init/validate) 완료(`infra/terraform`), 실제 리소스를 Terraform 관리로 가져오는 import는 리스크 관리 차원에서 별도 진행 예정 |
 
 ## 디렉토리 구조
 
@@ -22,7 +22,7 @@ infra/
 ├── k8s/          tram 네임스페이스 애플리케이션 매니페스트 (ArgoCD가 감시하는 경로)
 ├── argocd/       ArgoCD 자체 리소스 (Ingress, Application 정의) — k8s/와 의도적으로 분리
 ├── monitoring/   Grafana Ingress — Helm이 관리하지 않는 부분만 수동 관리
-└── terraform/    (예정) EC2 인프라 코드화
+└── terraform/    EC2 인프라 코드 작성/검증 완료, import는 별도 진행 예정
 ```
 
 Secret(JWT_SECRET, ADMIN_INITIAL_PASSWORD 등) 생성 방법은 [infra/k8s/README.md](k8s/README.md) 참고.
@@ -100,3 +100,12 @@ VS Code(원격 개발 환경)의 내장 Git 확장이 자격 증명 관리를 �
 이 경우 GitHub Personal Access Token을 `https://x-access-token:<PAT>@github.com/...`
 형태로 push 대상 URL에 직접 넣어(일회성으로, `git remote set-url`처럼 영구 저장하지
 않고) 우회했습니다. `.git/config`에 토큰이 남지 않도록 매번 확인이 필요합니다.
+
+### 7. 초기 해커톤 커밋에 남아있던 OpenWeatherMap API 키
+포트폴리오 최종 점검 중 `git log -p` 전체 히스토리를 훑다가, 초기 해커톤 프로토타입
+커밋(`85fbcec`)의 프론트엔드 코드에 OpenWeatherMap API 키가 평문으로 하드코딩되어
+있던 것을 발견했습니다. 이후 백엔드 프록시 방식(`WEATHER_API_KEY` 환경변수)으로
+리팩터링한 커밋(`661af89`)에서 코드상으로는 제거됐지만, git history에는 그대로
+남아있습니다. 확인 결과 **현재 운영 중인 키와는 다른, 이미 비활성화된 별개의 키**였음을
+확인해 별도 조치는 필요 없었습니다. 교훈: 커밋 전에 API 키/시크릿 하드코딩 여부를
+사전 점검하는 습관이 필요합니다 (git history는 나중에 지워도 이미 push됐다면 늦습니다).

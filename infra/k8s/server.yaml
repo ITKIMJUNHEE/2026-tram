@@ -24,9 +24,23 @@ spec:
             - secretRef:
                 name: server-secrets
           env:
-            # k8s Service 이름(postgres)이 호스트명이 된다.
-            - name: DATABASE_URL
-              value: "postgresql://tram:tram@postgres:5432/tram_db"
+            # DATABASE_URL 통짜 문자열 대신 DB_* 개별 값으로 분리해서, 비밀번호가
+            # git에 평문으로 커밋되지 않도록 한다 (backend/src/db/connection.ts가
+            # 이 값들을 조합한다). DB_PASSWORD는 postgres.yaml과 동일한
+            # postgres-secrets Secret을 재사용한다.
+            - name: DB_HOST
+              value: "postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "tram"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+            - name: DB_NAME
+              value: "tram_db"
             - name: PORT
               value: "4000"
             # k8s Service 이름(ml-service)이 호스트명이 된다.
