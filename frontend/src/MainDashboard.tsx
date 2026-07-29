@@ -255,7 +255,7 @@ const MainDashboard = () => {
                 <Megaphone size={18} /> AI 시민 안내
             </button>
             <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/prediction')}
                 title="관제 담당자 로그인이 필요한 기능입니다"
                 className="relative flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200/50 transition-all hover:-translate-y-1"
             >
@@ -265,7 +265,7 @@ const MainDashboard = () => {
                 </span>
             </button>
             <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/simulation')}
                 title="관제 담당자 로그인이 필요한 기능입니다"
                 className="relative flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-200/50 transition-all hover:-translate-y-1"
             >
