@@ -5,9 +5,9 @@
 <img src="diagrams/system-architecture.png" width="900" alt="시스템 아키텍처">
 
 단일 EC2 인스턴스 위에서 k3s 하나로 프론트엔드/백엔드/DB/모니터링까지 전부
-운영합니다. 지금 트래픽 규모에서는 멀티 노드·멀티 AZ가 필요하지 않다고 판단해
-관리 부담과 비용을 최소화하는 대신, GitOps 자동 배포와 Prometheus/Grafana
-모니터링으로 운영 안정성을 확보하는 쪽을 택했습니다.
+운영. 현재 트래픽 규모에서는 멀티 노드·멀티 AZ가 불필요하다고 판단, 관리
+부담과 비용을 최소화하는 대신 GitOps 자동 배포와 Prometheus/Grafana
+모니터링으로 운영 안정성 확보를 택함.
 
 ```mermaid
 flowchart TB
@@ -62,8 +62,8 @@ flowchart TB
 
 <img src="diagrams/cicd-pipeline.png" width="900" alt="배포 파이프라인">
 
-코드 push부터 실제 반영까지 사람이 수동으로 개입하는 지점이 없습니다 —
-GitHub Actions가 빌드·테스트·이미지 푸시를 하고 ArgoCD가 그 변경을 감지해
-클러스터에 동기화하므로, git 히스토리가 곧 배포 이력이 됩니다.
+코드 push부터 실제 반영까지 사람이 수동으로 개입하는 지점 없음 — GitHub
+Actions가 빌드·테스트·이미지 푸시를 수행하고 ArgoCD가 그 변경을 감지해
+클러스터에 동기화, git 히스토리가 곧 배포 이력이 됨.
 
-자세한 흐름과 트러블슈팅은 [infra/README.md](../infra/README.md#배포-흐름)를 참고하세요.
+자세한 흐름과 트러블슈팅은 [infra/README.md](../infra/README.md#배포-흐름) 참고.

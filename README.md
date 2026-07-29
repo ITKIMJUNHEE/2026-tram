@@ -2,7 +2,7 @@
 
 정거장 좌표와 시뮬레이션 로직이 프론트엔드에 하드코딩되어 있던 해커톤 프로토타입을,
 JWT 인증 관제 시스템·ML 수요 예측·GitOps 자동 배포·모니터링까지 갖춘 풀스택 서비스로
-확장한 프로젝트입니다.
+확장한 프로젝트.
 
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
@@ -20,12 +20,15 @@ JWT 인증 관제 시스템·ML 수요 예측·GitOps 자동 배포·모니터�
 
 ## 배경
 
-원래 팀 해커톤에서 만든 정적 HTML/JS 프로토타입(정거장 좌표·시뮬레이션 로직이 전부
-프론트엔드에 하드코딩)이었습니다. 이후 이어받아 React+Express 3-Tier 구조로
-마이그레이션하고, PostgreSQL 영속화 → Docker/k3s 배포 → ArgoCD GitOps → TypeScript
-전환 → Python ML 예측 서비스 → JWT 인증 관제 시스템 순으로 하나씩 확장해서 지금의
-형태가 됐습니다. 아래 [개발 히스토리](#개발-히스토리-요약)에 실제 커밋 순서 그대로
-정리해뒀습니다.
+팀 해커톤에서 제작한 정적 HTML/JS 프로토타입에서 출발. 정거장 좌표·시뮬레이션
+로직이 전부 프론트엔드에 하드코딩된, 프론트엔드 구현 중심의 대회 제출물이었음.
+
+대회 종료 후 이 프로토타입을 실제 서비스 가능한 형태로 확장하기로 결정, 이어서
+React+Express 3-Tier 구조 마이그레이션을 시작으로 PostgreSQL 영속화 →
+Docker/k3s 배포 → ArgoCD GitOps → TypeScript 전환 → Python ML 예측 서비스 →
+JWT 인증 관제 시스템까지, 인프라·백엔드·ML·인증 전 영역을 순차적으로 구축해
+지금의 형태로 확장. 실제 커밋 순서는 아래 [개발 히스토리](#개발-히스토리-요약)에
+정리.
 
 ## 결과물 스크린샷
 
@@ -65,9 +68,9 @@ JWT 인증 관제 시스템·ML 수요 예측·GitOps 자동 배포·모니터�
 <img src="docs/diagrams/system-architecture.png" width="900" alt="시스템 아키텍처">
 
 EC2 인스턴스 한 대 위에 k3s 단일 노드 클러스터를 올려 실제 트래픽 규모에 맞는
-비용 효율적인 구조로 운영합니다. Traefik이 도메인 하나로 프론트엔드/백엔드
-라우팅을 모두 처리하고, ML 서비스는 백엔드와 분리된 프로세스로 두어 장애가
-나도 규칙 기반 폴백으로 서비스가 끊기지 않게 했습니다.
+비용 효율적인 구조로 운영. Traefik이 도메인 하나로 프론트엔드/백엔드 라우팅을
+모두 처리하며, ML 서비스는 백엔드와 분리된 프로세스로 구성해 장애 시에도
+규칙 기반 폴백으로 서비스 연속성 확보.
 
 ```mermaid
 flowchart LR
@@ -87,13 +90,13 @@ flowchart LR
 
 <img src="docs/diagrams/cicd-pipeline.png" width="900" alt="배포 파이프라인">
 
-`git push` 한 번이면 GitHub Actions가 빌드·테스트 후 이미지를 GHCR에 올리고
-ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영합니다(GitOps). 수동 SSH 배포
-없이 git 커밋 이력이 곧 배포 이력이 되도록 만든 구조입니다.
+`git push` 한 번으로 GitHub Actions가 빌드·테스트 후 이미지를 GHCR에 업로드,
+ArgoCD가 이를 감지해 k3s 클러스터에 자동 반영(GitOps). 수동 SSH 배포 없이
+git 커밋 이력이 곧 배포 이력이 되는 구조.
 
 프론트엔드/백엔드/DB/ArgoCD/모니터링 전체 구조의 상세 다이어그램은
 [docs/architecture.md](docs/architecture.md), 배포 파이프라인의 트러블슈팅은
-[infra/README.md](infra/README.md#배포-흐름)에 있습니다.
+[infra/README.md](infra/README.md#배포-흐름) 참고.
 
 ## 기술 스택
 
@@ -147,7 +150,7 @@ npm run seed
 npm run dev   # backend(:4000) + frontend(:3000) 동시 실행
 ```
 
-로그인 계정(`admin`)은 `backend/.env`의 `ADMIN_INITIAL_PASSWORD`로 최초 시딩됩니다.
+로그인 계정(`admin`)은 `backend/.env`의 `ADMIN_INITIAL_PASSWORD`로 최초 시딩.
 자세한 로컬 실행/환경변수 설정은 [backend/README.md](backend/README.md),
 [frontend/README.md](frontend/README.md) 참고.
 
@@ -167,7 +170,7 @@ npm run dev   # backend(:4000) + frontend(:3000) 동시 실행
 
 ## 개발 히스토리 요약
 
-실제 커밋 순서 그대로입니다 (`git log --oneline`).
+실제 커밋 순서 그대로 (`git log --oneline`).
 
 1. **해커톤 프로토타입** — 정적 HTML/JS로 시작 (초기 `oasis` 커밋들)
 2. **PostgreSQL 마이그레이션** — `node:sqlite` → PostgreSQL, 동기→비동기 전환
